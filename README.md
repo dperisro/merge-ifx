@@ -1,3 +1,9 @@
+FULL XSD
+========
+http://bms.ifxforum.org/rel2_4/servlet/CreateXsd?tagname=IFX&tagid=6473&handleAbstract=choice
+
+OBJECTS
+========
 http://bms.ifxforum.org/rel2_4/servlet/CreateXsd?objname=Acct&objid=77&handleAbstract=choice
 http://bms.ifxforum.org/rel2_4/servlet/CreateXsd?objname=AcctAcctRel&objid=105&handleAbstract=choice
 http://bms.ifxforum.org/rel2_4/servlet/CreateXsd?objname=AcctHold&objid=102&handleAbstract=choice
