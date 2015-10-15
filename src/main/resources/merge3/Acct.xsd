@@ -2,7 +2,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.ifxforum.org/IFX_2X"
             attributeFormDefault="unqualified" elementFormDefault="qualified"
             targetNamespace="http://www.ifxforum.org/IFX_2X">
-    <xsd:simpleType name="Acct">
+    <xsd:simpleType name="Perico">
         <xsd:restriction base="xsd:string"/>
     </xsd:simpleType>
     <xsd:simpleType name="Bill">
