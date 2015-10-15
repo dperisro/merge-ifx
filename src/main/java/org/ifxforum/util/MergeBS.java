@@ -13,7 +13,7 @@ import java.util.List;
 public class MergeBS extends MergeIFXMessagesBS {
 
     //private static String CURRENT = Paths.get("").toAbsolutePath().toString();
-    private static String CURRENT = "src/main/resources/merge2";
+    private static String CURRENT = "src/main/resources/merge3";
 
     public static void main(String[] args) throws Exception {
         File file = new File(CURRENT);
