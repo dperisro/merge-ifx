@@ -5,12 +5,12 @@ apply plugin: 'idea'
 group 'com.bs.ifx'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.5
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile fileTree(dir: 'lib', include: '*.jar')
 }
