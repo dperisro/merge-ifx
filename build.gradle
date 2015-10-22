@@ -1,16 +1,63 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'application'
+apply plugin: 'spring-boot'
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
 
 group 'com.bs.ifx'
-version '1.0-SNAPSHOT'
-
+version '1.0'
+mainClassName = 'com.bs.ifx.merge.Application'
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url 'http://repo.spring.io/libs-release' }
+}
+
+buildscript {
+    repositories {
+        maven { url 'http://repo.spring.io/libs-release' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.2.7.RELEASE'
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'lib', include: '*.jar')
+    compile 'commons-io:commons-io:2.4'
+
+    //Logger
+    compile 'ch.qos.logback:logback-core:1.1.3'
+    compile 'ch.qos.logback:logback-classic:1.1.3'
+
+    //SpringBoot
+    compile 'org.springframework.boot:spring-boot-starter-batch'
+}
+
+task createDocs {
+    def docs = file("$buildDir/docs")
+    outputs.dir docs
+    doLast {
+        docs.mkdirs()
+        new File(docs, "readme.txt").write("Read me!")
+    }
+}
+
+applicationDistribution.from("src/main/resources/") {
+    into "config"
+}
+
+distributions {
+    main {
+        contents {
+            from(createDocs) {
+                into "docs"
+            }
+        }
+    }
 }
