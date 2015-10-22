@@ -36,13 +36,13 @@ public class MergeIFXMessagesBS {
     public void processFiles(String[] args) throws SAXException, IOException, ParserConfigurationException, TransformerException {
         this.loadTagsFromAllFiles(args);
         Document basedoc = this.createSkeletonFile(args[0]);
-        String[] var6 = args;
+        /*String[] var6 = args;
         int var5 = args.length;
 
         for (int var4 = 0; var4 < var5; ++var4) {
             String fileName = var6[var4];
             this.mergeElements(fileName, this.DEFAULT_BASE_FILE, basedoc);
-        }
+        }*/
 
         this.writeNode(this.DEFAULT_BASE_FILE, basedoc);
     }
@@ -95,6 +95,7 @@ public class MergeIFXMessagesBS {
     }
 
     private Document createSkeletonFile(String baseFile) throws ParserConfigurationException, SAXException, IOException, TransformerException {
+        System.out.println(baseFile);
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -102,6 +103,10 @@ public class MergeIFXMessagesBS {
         Document parent = db.newDocument();
         parent.setDocumentURI(template.getDocumentURI());
         parent.setXmlVersion(template.getXmlVersion());
+
+        System.out.println(template.getDocumentURI());
+        System.out.println(template.getXmlVersion());
+
         Element schema = parent.createElement("xsd:schema");
         schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
         schema.setAttribute("xmlns", "http://www.ifxforum.org/IFX_2X");
