@@ -1,7 +1,7 @@
-# Created by .ignore support plugin (hsz.mobi)
-
 *.log
 *.iml
 .idea/
 /build/
+/logs
 /.gradle
+/dist
