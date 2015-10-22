@@ -25,7 +25,7 @@ public class Application implements CommandLineRunner {
     }
 
     @Override
-    public void run(final String... args) {
+    public void run(final String... args) throws Exception {
         this.mergeService.merge();
     }
 

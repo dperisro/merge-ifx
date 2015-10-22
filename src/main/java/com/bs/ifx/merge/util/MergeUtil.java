@@ -1,6 +1,7 @@
 package com.bs.ifx.merge.util;
 
 import com.bs.ifx.merge.conf.MergeConfig;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -75,6 +76,15 @@ public class MergeUtil {
 
         }
         LOGGER.info("Wrote " + outputFile.getName());
+    }
+
+    public void preparePathDestination(final String path) throws IOException {
+        File destination = new File(path);
+        if (destination.exists()) {
+            LOGGER.info("Deleting....");
+            FileUtils.deleteDirectory(destination);
+        }
+        destination.mkdirs();
     }
 
 }
