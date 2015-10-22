@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Component
 public class MergeConfig {
 
@@ -11,29 +14,17 @@ public class MergeConfig {
     public static final String ENCODING = "UTF-8";
     public static final String COMMON_XSD = "ifx-commons.xsd";
 
-    private final String pathOrigin;
-    private final String pathDestination;
-    private final String keys;
+    private final String inputPath;
+    private final String outputPath;
+    private final String[] keys;
 
     @Autowired
-    public MergeConfig(@Value("${pathOrigin}") final String pathOriginV,
-                       @Value("${pathDestination}") final String pathDestinationV,
-                       @Value("${keys}") final String keysV) {
-        this.pathOrigin = pathOriginV;
-        this.pathDestination = pathDestinationV;
+    public MergeConfig(@Value("${inputPath}") final String inputPath,
+                       @Value("${outputPath}") final String outputPath,
+                       @Value("${keys}") final String[] keysV) {
+        this.inputPath = inputPath;
+        this.outputPath = outputPath;
         this.keys = keysV;
-    }
-
-    public String getPathDestination() {
-        return pathDestination;
-    }
-
-    public String getPathOrigin() {
-        return pathOrigin;
-    }
-
-    public String getKeys() {
-        return keys;
     }
 
     @Override
@@ -41,11 +32,23 @@ public class MergeConfig {
         StringBuilder result = new StringBuilder();
         String newLine = System.getProperty("line.separator");
         result.append(this.getClass().getName() + " {" + newLine);
-        result.append(" pathOrigin: " + getPathOrigin() + newLine);
-        result.append(" pathDestination: " + getPathDestination() + newLine);
+        result.append(" pathOrigin: " + getInputPath() + newLine);
+        result.append(" pathDestination: " + getOutputPath() + newLine);
         result.append(" keys: " + getKeys() + newLine);
         result.append("}");
         return result.toString();
+    }
+
+    public String getInputPath() {
+        return inputPath;
+    }
+
+    public String getOutputPath() {
+        return outputPath;
+    }
+
+    public List<String> getKeys() {
+        return Arrays.asList(keys);
     }
 
 }

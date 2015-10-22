@@ -19,10 +19,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 @Component
 public class MergeUtil {
@@ -30,12 +27,18 @@ public class MergeUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(MergeUtil.class);
 
     public Document createSkeletonFile() throws ParserConfigurationException, SAXException, IOException, TransformerException {
+        return createSkeletonFile(null);
+    }
+
+    public Document createSkeletonFile(File fileBase) throws ParserConfigurationException, SAXException, IOException, TransformerException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
-        //Document template = db.parse(new File(baseFile));
         Document parent = db.newDocument();
-        //parent.setDocumentURI(template.getDocumentURI());
+        if (fileBase != null) {
+            Document template = db.parse(fileBase);
+            parent.setDocumentURI(template.getDocumentURI());
+        }
         parent.setXmlVersion(MergeConfig.VERSION);
         Element schema = parent.createElement("xsd:schema");
         schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
@@ -78,13 +81,33 @@ public class MergeUtil {
         LOGGER.info("Wrote " + outputFile.getName());
     }
 
-    public void preparePathDestination(final String path) throws IOException {
-        File destination = new File(path);
+    public void prepareOutput(final String outputPath) throws IOException {
+        File destination = new File(outputPath);
         if (destination.exists()) {
             LOGGER.info("Deleting....");
             FileUtils.deleteDirectory(destination);
         }
         destination.mkdirs();
+    }
+
+    public void prepareInput(final String inputPath) throws Exception {
+        File inputDirectory = new File(inputPath);
+        if (!inputDirectory.isDirectory()) {
+            throw new Exception("InputPath is not valid!!");
+        } else {
+            if (inputDirectory.listFiles() == null || inputDirectory.list(new MergeFileFilter()).length <= 0) {
+                throw new Exception("InputPath not contains XSD files");
+            }
+        }
+    }
+
+    public DocumentBuilder getDocumentBuilder() throws Exception {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        OutputStreamWriter errorWriter = new OutputStreamWriter(System.err, "UTF-8");
+        db.setErrorHandler(new MergeErrorHandler(new PrintWriter(errorWriter, true)));
+        return db;
     }
 
 }

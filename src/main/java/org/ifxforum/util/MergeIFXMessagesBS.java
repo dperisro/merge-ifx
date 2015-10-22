@@ -36,13 +36,13 @@ public class MergeIFXMessagesBS {
     public void processFiles(String[] args) throws SAXException, IOException, ParserConfigurationException, TransformerException {
         this.loadTagsFromAllFiles(args);
         Document basedoc = this.createSkeletonFile(args[0]);
-        /*String[] var6 = args;
+        String[] var6 = args;
         int var5 = args.length;
 
         for (int var4 = 0; var4 < var5; ++var4) {
             String fileName = var6[var4];
             this.mergeElements(fileName, this.DEFAULT_BASE_FILE, basedoc);
-        }*/
+        }
 
         this.writeNode(this.DEFAULT_BASE_FILE, basedoc);
     }
