@@ -54,9 +54,3 @@ applicationDistribution.from("src/main/resources/") {
     exclude('merge*')
     into "config"
 }
-
-task sourcesJar(type: Jar) {
-    dependsOn javadoc
-    classifier "sources"
-    from sourceSets.main.allSource
-}
