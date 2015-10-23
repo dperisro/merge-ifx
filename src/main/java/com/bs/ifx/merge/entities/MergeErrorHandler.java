@@ -1,4 +1,4 @@
-package com.bs.ifx.merge.util;
+package com.bs.ifx.merge.entities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ public class MergeErrorHandler implements ErrorHandler {
 
     private PrintWriter out;
 
-    MergeErrorHandler(PrintWriter out) {
+    public MergeErrorHandler(PrintWriter out) {
         this.out = out;
     }
 

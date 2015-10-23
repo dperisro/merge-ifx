@@ -1,6 +1,10 @@
 package com.bs.ifx.merge.util;
 
 import com.bs.ifx.merge.conf.MergeConfig;
+import com.bs.ifx.merge.entities.MergeEntity;
+import com.bs.ifx.merge.entities.MergeErrorHandler;
+import com.bs.ifx.merge.entities.MergeFileFilter;
+import com.bs.ifx.merge.entities.MergeRef;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +24,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.util.List;
 
 @Component
 public class MergeUtil {
@@ -108,6 +113,37 @@ public class MergeUtil {
         OutputStreamWriter errorWriter = new OutputStreamWriter(System.err, "UTF-8");
         db.setErrorHandler(new MergeErrorHandler(new PrintWriter(errorWriter, true)));
         return db;
+    }
+
+    public MergeRef isMatchingNodeOtherKeys(final Node node, final String currentKey, final List<String> keys) {
+        for (String keyWord : keys) {
+            if (keys.equals(currentKey)) continue;
+            if (isMatchingNode(node, keyWord)) {
+                return new MergeRef(keyWord);
+            }
+        }
+        return new MergeRef();
+    }
+
+    public boolean isMatchingNode(Node node, String key) {
+        if (node.getNodeValue().startsWith(key)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void createXSDInclude(final Document messageFile, final MergeEntity entity) {
+        createXSDInclude(messageFile, MergeConfig.COMMON_XSD);
+        for (String key : entity.getKeysMatching()) {
+            createXSDInclude(messageFile, key);
+        }
+    }
+
+    public void createXSDInclude(Document messageFile, final String name) {
+        Element createElementNS = messageFile.createElement("xsd:include");
+        createElementNS.setAttribute("schemaLocation", name + ".xsd");
+        Node importNode = messageFile.importNode(createElementNS, true);
+        messageFile.getDocumentElement().appendChild(importNode);
     }
 
 }

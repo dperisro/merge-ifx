@@ -1,4 +1,4 @@
-package com.bs.ifx.merge.util;
+package com.bs.ifx.merge.entities;
 
 import java.io.File;
 import java.io.FilenameFilter;

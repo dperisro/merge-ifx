@@ -10,6 +10,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+/**
+ * SpringApplication run
+ */
 @ComponentScan
 @EnableAutoConfiguration
 @SpringBootApplication
@@ -17,13 +20,26 @@ public class Application implements CommandLineRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
+    /**
+     * Inject mergeService
+     */
     @Autowired
     private MergeService mergeService;
 
+    /**
+     * SpringApplication run
+     *
+     * @param args Nothing
+     */
     public static void main(final String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
+    /**
+     * SpringApplication run
+     *
+     * @param args Nothing
+     */
     @Override
     public void run(final String... args) throws Exception {
         this.mergeService.merge();

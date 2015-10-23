@@ -12,7 +12,7 @@ public class MergeConfig {
 
     public static final String VERSION = "1.0";
     public static final String ENCODING = "UTF-8";
-    public static final String COMMON_XSD = "ifx-commons.xsd";
+    public static final String COMMON_XSD = "ifx-commons";
 
     private final String inputPath;
     private final String outputPath;
