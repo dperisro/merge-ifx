@@ -17,6 +17,10 @@ repositories {
     maven { url 'http://repo.spring.io/libs-release' }
 }
 
+configurations {
+    javadoc
+}
+
 buildscript {
     repositories {
         maven { url 'http://repo.spring.io/libs-release' }
@@ -46,25 +50,13 @@ tasks.withType(FindBugs) {
     }
 }
 
-task createDocs {
-    def docs = file("$buildDir/docs")
-    outputs.dir docs
-    doLast {
-        docs.mkdirs()
-        new File(docs, "readme.txt").write("Read me!")
-    }
-}
-
 applicationDistribution.from("src/main/resources/") {
+    exclude('merge*')
     into "config"
 }
 
-distributions {
-    main {
-        contents {
-            from(createDocs) {
-                into "docs"
-            }
-        }
-    }
+task sourcesJar(type: Jar) {
+    dependsOn javadoc
+    classifier "sources"
+    from sourceSets.main.allSource
 }
