@@ -16,15 +16,15 @@ public class MergeConfig {
 
     private final String inputPath;
     private final String outputPath;
-    private final String[] keys;
+    private final List<String> keys;
 
     @Autowired
-    public MergeConfig(@Value("${inputPath}") final String inputPath,
-                       @Value("${outputPath}") final String outputPath,
+    public MergeConfig(@Value("${inputPath}") final String inputPathV,
+                       @Value("${outputPath}") final String outputPathV,
                        @Value("${keys}") final String[] keysV) {
-        this.inputPath = inputPath;
-        this.outputPath = outputPath;
-        this.keys = keysV;
+        this.inputPath = inputPathV;
+        this.outputPath = outputPathV;
+        this.keys = Arrays.asList(keysV);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class MergeConfig {
     }
 
     public List<String> getKeys() {
-        return Arrays.asList(keys);
+        return keys;
     }
 
 }

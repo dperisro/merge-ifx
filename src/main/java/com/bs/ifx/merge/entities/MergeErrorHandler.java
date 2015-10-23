@@ -14,11 +14,11 @@ public class MergeErrorHandler implements ErrorHandler {
 
     private PrintWriter out;
 
-    public MergeErrorHandler(PrintWriter out) {
-        this.out = out;
+    public MergeErrorHandler(final PrintWriter outV) {
+        this.out = outV;
     }
 
-    private String getParseExceptionInfo(SAXParseException spe) {
+    private String getParseExceptionInfo(final SAXParseException spe) {
         String systemId = spe.getSystemId();
         if (systemId == null) {
             systemId = "null";
@@ -28,16 +28,16 @@ public class MergeErrorHandler implements ErrorHandler {
         return info;
     }
 
-    public void warning(SAXParseException spe) throws SAXException {
+    public void warning(final SAXParseException spe) throws SAXException {
         LOGGER.warn(this.getParseExceptionInfo(spe));
     }
 
-    public void error(SAXParseException spe) throws SAXException {
+    public void error(final SAXParseException spe) throws SAXException {
         String message = "Error: " + this.getParseExceptionInfo(spe);
         throw new SAXException(message);
     }
 
-    public void fatalError(SAXParseException spe) throws SAXException {
+    public void fatalError(final SAXParseException spe) throws SAXException {
         String message = "Fatal Error: " + this.getParseExceptionInfo(spe);
         throw new SAXException(message);
     }

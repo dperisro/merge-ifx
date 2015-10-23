@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
+ * .
  * SpringApplication run
  */
 @ComponentScan
@@ -21,12 +22,14 @@ public class Application implements CommandLineRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     /**
+     * .
      * Inject mergeService
      */
     @Autowired
     private MergeService mergeService;
 
     /**
+     * .
      * SpringApplication run
      *
      * @param args Nothing
@@ -36,13 +39,14 @@ public class Application implements CommandLineRunner {
     }
 
     /**
+     * .
      * SpringApplication run
      *
      * @param args Nothing
      */
     @Override
     public void run(final String... args) throws Exception {
-        this.mergeService.merge();
+        this.mergeService.doMerge();
     }
 
 

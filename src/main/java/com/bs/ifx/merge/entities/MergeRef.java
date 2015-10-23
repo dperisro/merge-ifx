@@ -5,9 +5,9 @@ public class MergeRef {
     private boolean ref;
     private String name;
 
-    public MergeRef(String name) {
+    public MergeRef(final String nameV) {
         this.ref = true;
-        this.name = name;
+        this.name = nameV;
     }
 
     public MergeRef() {

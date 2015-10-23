@@ -35,7 +35,7 @@ public class MergeUtil {
         return createSkeletonFile(null);
     }
 
-    public Document createSkeletonFile(File fileBase) throws ParserConfigurationException, SAXException, IOException, TransformerException {
+    public Document createSkeletonFile(final File fileBase) throws ParserConfigurationException, SAXException, IOException, TransformerException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -92,7 +92,9 @@ public class MergeUtil {
             LOGGER.info("Deleting....");
             FileUtils.deleteDirectory(destination);
         }
-        destination.mkdirs();
+        if (!destination.mkdirs()) {
+            throw new IOException("OutputPath is not create!!");
+        }
     }
 
     public void prepareInput(final String inputPath) throws Exception {
@@ -117,7 +119,9 @@ public class MergeUtil {
 
     public MergeRef isMatchingNodeOtherKeys(final Node node, final String currentKey, final List<String> keys) {
         for (String keyWord : keys) {
-            if (keys.equals(currentKey)) continue;
+            if (keyWord.equals(currentKey)) {
+                continue;
+            }
             if (isMatchingNode(node, keyWord)) {
                 return new MergeRef(keyWord);
             }
@@ -125,7 +129,7 @@ public class MergeUtil {
         return new MergeRef();
     }
 
-    public boolean isMatchingNode(Node node, String key) {
+    public boolean isMatchingNode(final Node node, final String key) {
         if (node.getNodeValue().startsWith(key)) {
             return true;
         }
@@ -139,7 +143,7 @@ public class MergeUtil {
         }
     }
 
-    public void createXSDInclude(Document messageFile, final String name) {
+    public void createXSDInclude(final Document messageFile, final String name) {
         Element createElementNS = messageFile.createElement("xsd:include");
         createElementNS.setAttribute("schemaLocation", name + ".xsd");
         Node importNode = messageFile.importNode(createElementNS, true);

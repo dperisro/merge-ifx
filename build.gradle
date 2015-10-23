@@ -39,6 +39,13 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-batch'
 }
 
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
 task createDocs {
     def docs = file("$buildDir/docs")
     outputs.dir docs

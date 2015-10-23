@@ -26,12 +26,10 @@ public class MergeService extends MergeUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MergeService.class);
     private static Map<String, MergeEntity> mapNodes = new HashMap<String, MergeEntity>();
-    private Set<Node> commonNodes = new HashSet<Node>();
+    private static Map<String, Node> commonNodes = new HashMap<String, Node>();
 
     //TEST Elimiar
     private static Set<String> commonNodesTest = new HashSet<String>();
-
-    private Document commonIFX;
 
     @Autowired
     private MergeConfig config;
@@ -41,16 +39,14 @@ public class MergeService extends MergeUtil {
         LOGGER.info(config.toString());
         prepareInput(config.getInputPath());
         prepareOutput(config.getOutputPath());
-        commonIFX = createSkeletonFile();
-        mapNodes.clear();
     }
 
-    public void merge() throws Exception {
+    public void doMerge() throws Exception {
 
         String[] filesXSD = new File(config.getInputPath()).list(new MergeFileFilter());
         for (String keyWord : config.getKeys()) {
             for (String inputFile : filesXSD) {
-                doSomething(keyWord, new File(config.getInputPath(), inputFile), commonIFX);
+                prepareMerge(keyWord, new File(config.getInputPath(), inputFile));
             }
         }
 
@@ -61,22 +57,21 @@ public class MergeService extends MergeUtil {
             Document messageFile = this.createSkeletonFile();
             createXSDInclude(messageFile, mapNodes.get(keyWord));
             for (Node imported : mapNodes.get(keyWord).getNodeMatch()) {
-                imported = messageFile.importNode(imported, true);
-                messageFile.getDocumentElement().appendChild(imported);
+                Node imported2 = messageFile.importNode(imported, true);
+                messageFile.getDocumentElement().appendChild(imported2);
             }
             writeNode(config.getOutputPath(), keyWord + ".xsd", messageFile);
         }
 
         Document commonIFX = createSkeletonFile();
-        for (Node imported : commonNodes) {
-            LOGGER.info("commonIFX common: " + imported.getTextContent());
-            imported = commonIFX.importNode(imported, true);
-            commonIFX.getDocumentElement().appendChild(imported);
+        for (String commonElement : commonNodes.keySet()) {
+            Node imported2 = commonIFX.importNode(commonNodes.get(commonElement), true);
+            commonIFX.getDocumentElement().appendChild(imported2);
         }
         writeNode(config.getOutputPath(), MergeConfig.COMMON_XSD + ".xsd", commonIFX);
     }
 
-    public void doSomething(String key, File file, Document commonIFX) throws Exception {
+    public void prepareMerge(final String key, final File file) throws Exception {
         LOGGER.info("Key: " + key + " && File: " + file.getAbsolutePath());
         MergeEntity entity = new MergeEntity(key);
         Document sourceDoc = getDocumentBuilder().parse(file);
@@ -96,8 +91,7 @@ public class MergeService extends MergeUtil {
                     } else if (refOtherKey.isRef()) {
                         entity.getKeysMatching().add(refOtherKey.getName());
                     } else {
-                        commonNodes.add(clone);
-                        commonNodesTest.add(node.getNodeValue());
+                        commonNodes.put(node.getNodeValue(), clone);
                     }
                 }
             }
