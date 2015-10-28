@@ -13,18 +13,26 @@ public class MergeConfig {
     public static final String VERSION = "1.0";
     public static final String ENCODING = "UTF-8";
     public static final String COMMON_XSD = "ifx-commons";
+    public static final String EXT_XSD = ".xsd";
+    public static final String BASE_XSD = "base";
+    public static final String BASE_NS = "http://www.ifxforum.org/IFX_2X";
+
+    public static final boolean NS = false;
 
     private final String inputPath;
     private final String outputPath;
     private final List<String> keys;
+    private final List<String> base;
 
     @Autowired
     public MergeConfig(@Value("${inputPath}") final String inputPathV,
                        @Value("${outputPath}") final String outputPathV,
-                       @Value("${keys}") final String[] keysV) {
+                       @Value("${keys}") final String[] keysV,
+                       @Value("${base}") final String[] baseV) {
         this.inputPath = inputPathV;
         this.outputPath = outputPathV;
         this.keys = Arrays.asList(keysV);
+        this.base = Arrays.asList(baseV);
     }
 
     @Override
@@ -35,6 +43,7 @@ public class MergeConfig {
         result.append(" pathOrigin: " + getInputPath() + newLine);
         result.append(" pathDestination: " + getOutputPath() + newLine);
         result.append(" keys: " + getKeys() + newLine);
+        result.append(" base: " + getBase() + newLine);
         result.append("}");
         return result.toString();
     }
@@ -49,6 +58,10 @@ public class MergeConfig {
 
     public List<String> getKeys() {
         return keys;
+    }
+
+    public List<String> getBase() {
+        return base;
     }
 
 }

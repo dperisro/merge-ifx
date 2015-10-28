@@ -31,11 +31,16 @@ public class MergeUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MergeUtil.class);
 
-    public Document createSkeletonFile() throws ParserConfigurationException, SAXException, IOException, TransformerException {
-        return createSkeletonFile(null);
+    public Document createSkeletonFile(final String key) throws ParserConfigurationException, SAXException, IOException, TransformerException {
+        if (MergeConfig.NS) {
+            return createSkeletonFile(null, key);
+        } else {
+            return createSkeletonFile(null, "");
+        }
     }
 
-    public Document createSkeletonFile(final File fileBase) throws ParserConfigurationException, SAXException, IOException, TransformerException {
+    public Document createSkeletonFile(final File fileBase, final String key)
+            throws ParserConfigurationException, SAXException, IOException, TransformerException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -47,10 +52,17 @@ public class MergeUtil {
         parent.setXmlVersion(MergeConfig.VERSION);
         Element schema = parent.createElement("xsd:schema");
         schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        schema.setAttribute("xmlns", "http://www.ifxforum.org/IFX_2X");
+        schema.setAttribute("xmlns", MergeConfig.BASE_NS + key);
+
+        if (MergeConfig.NS) {
+            if (!key.equals(MergeConfig.BASE_XSD)) {
+                schema.setAttribute("xmlns:base", MergeConfig.BASE_NS + MergeConfig.BASE_XSD);
+            }
+        }
+
         schema.setAttribute("attributeFormDefault", "unqualified");
         schema.setAttribute("elementFormDefault", "qualified");
-        schema.setAttribute("targetNamespace", "http://www.ifxforum.org/IFX_2X");
+        schema.setAttribute("targetNamespace", MergeConfig.BASE_NS + key);
         parent.appendChild(schema);
         return parent;
     }
@@ -112,12 +124,20 @@ public class MergeUtil {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
-        OutputStreamWriter errorWriter = new OutputStreamWriter(System.err, "UTF-8");
+        OutputStreamWriter errorWriter = new OutputStreamWriter(System.err, MergeConfig.ENCODING);
         db.setErrorHandler(new MergeErrorHandler(new PrintWriter(errorWriter, true)));
         return db;
     }
 
-    public MergeRef isMatchingNodeOtherKeys(final Node node, final String currentKey, final List<String> keys) {
+    public MergeRef isMatchOtherKeyOrBase(final Node node, final String currentKey, final List<String> keys, final List<String> baseKeys) {
+        if (isMatchingNodeBase(node, baseKeys)) {
+            return new MergeRef(MergeConfig.BASE_XSD, true);
+        } else {
+            return isMatchNodeWithKeys(node, currentKey, keys);
+        }
+    }
+
+    public MergeRef isMatchNodeWithKeys(final Node node, final String currentKey, final List<String> keys) {
         for (String keyWord : keys) {
             if (keyWord.equals(currentKey)) {
                 continue;
@@ -129,6 +149,16 @@ public class MergeUtil {
         return new MergeRef();
     }
 
+    public boolean isMatchingNodeBase(final Node node, final List<String> base) {
+        for (String keyWord : base) {
+            if (node.getNodeValue().equals(keyWord)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public boolean isMatchingNode(final Node node, final String key) {
         if (node.getNodeValue().startsWith(key)) {
             return true;
@@ -138,16 +168,37 @@ public class MergeUtil {
 
     public void createXSDInclude(final Document messageFile, final MergeEntity entity) {
         createXSDInclude(messageFile, MergeConfig.COMMON_XSD);
-        for (String key : entity.getKeysMatching()) {
+        for (String key : entity.getKeysMatch()) {
             createXSDInclude(messageFile, key);
         }
     }
 
     public void createXSDInclude(final Document messageFile, final String name) {
-        Element createElementNS = messageFile.createElement("xsd:include");
-        createElementNS.setAttribute("schemaLocation", name + ".xsd");
-        Node importNode = messageFile.importNode(createElementNS, true);
-        messageFile.getDocumentElement().appendChild(importNode);
+        if (MergeConfig.NS) {
+            Element createElementNS = messageFile.createElement("xsd:import");
+            createElementNS.setAttribute("schemaLocation", name + MergeConfig.EXT_XSD);
+            createElementNS.setAttribute("namespace", MergeConfig.BASE_NS + name);
+            Node importNode = messageFile.importNode(createElementNS, true);
+            messageFile.getDocumentElement().appendChild(importNode);
+        } else {
+            Element createElementNS = messageFile.createElement("xsd:include");
+            createElementNS.setAttribute("schemaLocation", name + ".xsd");
+            Node importNode = messageFile.importNode(createElementNS, true);
+            messageFile.getDocumentElement().appendChild(importNode);
+        }
+    }
+
+    public void createFile(final String keyWord, final MergeEntity entity, final String outPutPath) throws Exception {
+        Document messageFile = createSkeletonFile(keyWord);
+        if (!keyWord.equals(MergeConfig.BASE_XSD)) {
+            createXSDInclude(messageFile, entity);
+        }
+        for (Node imported : entity.getNodeMatch()) {
+            Node imported2 = messageFile.importNode(imported, true);
+            messageFile.getDocumentElement().appendChild(imported2);
+        }
+        writeNode(outPutPath, keyWord + MergeConfig.EXT_XSD, messageFile);
+
     }
 
 }

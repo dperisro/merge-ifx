@@ -44,6 +44,10 @@ public class MergeService extends MergeUtil {
     public void doMerge() throws Exception {
 
         String[] filesXSD = new File(config.getInputPath()).list(new MergeFileFilter());
+        for (String inputFile : filesXSD) {
+            prepareBaseObjects(new File(config.getInputPath(), inputFile));
+        }
+
         for (String keyWord : config.getKeys()) {
             for (String inputFile : filesXSD) {
                 prepareMerge(keyWord, new File(config.getInputPath(), inputFile));
@@ -53,22 +57,39 @@ public class MergeService extends MergeUtil {
         LOGGER.info("mapNodes: " + mapNodes.toString());
         LOGGER.info("commonNodesTest: " + commonNodesTest.toString());
 
-        for (String keyWord : config.getKeys()) {
-            Document messageFile = this.createSkeletonFile();
-            createXSDInclude(messageFile, mapNodes.get(keyWord));
-            for (Node imported : mapNodes.get(keyWord).getNodeMatch()) {
-                Node imported2 = messageFile.importNode(imported, true);
-                messageFile.getDocumentElement().appendChild(imported2);
-            }
-            writeNode(config.getOutputPath(), keyWord + ".xsd", messageFile);
+        for (String keyWord : mapNodes.keySet()) {
+            createFile(keyWord, mapNodes.get(keyWord), config.getOutputPath());
         }
 
-        Document commonIFX = createSkeletonFile();
+        Document commonIFX = createSkeletonFile(MergeConfig.COMMON_XSD);
+        createXSDInclude(commonIFX, MergeConfig.BASE_XSD);
         for (String commonElement : commonNodes.keySet()) {
             Node imported2 = commonIFX.importNode(commonNodes.get(commonElement), true);
             commonIFX.getDocumentElement().appendChild(imported2);
         }
-        writeNode(config.getOutputPath(), MergeConfig.COMMON_XSD + ".xsd", commonIFX);
+        writeNode(config.getOutputPath(), MergeConfig.COMMON_XSD + MergeConfig.EXT_XSD, commonIFX);
+    }
+
+    private void prepareBaseObjects(final File file) throws Exception {
+        MergeEntity entity = new MergeEntity(MergeConfig.BASE_XSD);
+        Document sourceDoc = getDocumentBuilder().parse(file);
+        NodeList sourceDocChildNodes = sourceDoc.getChildNodes();
+
+        for (int i = 0; i < sourceDocChildNodes.getLength(); i++) {
+            NodeList childNodes2 = sourceDocChildNodes.item(i).getChildNodes();
+            for (int j = 0; j < childNodes2.getLength(); j++) {
+                NamedNodeMap attributes = childNodes2.item(j).getAttributes();
+                if (attributes != null && attributes.getNamedItem("name") != null) {
+                    Node node = childNodes2.item(j).getAttributes().getNamedItem("name");
+                    Node clone = childNodes2.item(j).cloneNode(true);
+                    if (isMatchingNodeBase(node, config.getBase())) {
+                        entity.getNodeMatch().add(clone);
+                        entity.getNodeMatchString().add(node.getNodeValue());
+                    }
+                }
+            }
+        }
+        mapNodes.put(MergeConfig.BASE_XSD, entity);
     }
 
     public void prepareMerge(final String key, final File file) throws Exception {
@@ -84,12 +105,12 @@ public class MergeService extends MergeUtil {
                 if (attributes != null && attributes.getNamedItem("name") != null) {
                     Node node = childNodes2.item(j).getAttributes().getNamedItem("name");
                     Node clone = childNodes2.item(j).cloneNode(true);
-                    MergeRef refOtherKey = isMatchingNodeOtherKeys(node, key, config.getKeys());
+                    MergeRef refOtherKey = isMatchOtherKeyOrBase(node, key, config.getKeys(), config.getBase());
                     if (isMatchingNode(node, key)) {
                         entity.getNodeMatch().add(clone);
-                        entity.getNodeTestString().add(node.getNodeValue());
+                        entity.getNodeMatchString().add(node.getNodeValue());
                     } else if (refOtherKey.isRef()) {
-                        entity.getKeysMatching().add(refOtherKey.getName());
+                        entity.getKeysMatch().add(refOtherKey.getName());
                     } else {
                         commonNodes.put(node.getNodeValue(), clone);
                     }

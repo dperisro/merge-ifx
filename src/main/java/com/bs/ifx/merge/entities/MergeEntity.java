@@ -11,13 +11,15 @@ public class MergeEntity {
 
     private String key;
     private List<Node> nodeMatch;
-    private Set<String> keysMatching;
-    private List<String> nodeTestString = new ArrayList<String>();
+    private Set<String> keysMatch;
+    private List<String> nodeMatchString;
 
     public MergeEntity(final String keyV) {
         this.key = keyV;
-        nodeMatch = new ArrayList<Node>();
-        keysMatching = new HashSet<String>();
+        this.nodeMatch = new ArrayList<Node>();
+        this.keysMatch = new HashSet<String>();
+        this.nodeMatchString = new ArrayList<String>();
+
     }
 
     public String getKey() {
@@ -28,12 +30,12 @@ public class MergeEntity {
         return nodeMatch;
     }
 
-    public Set<String> getKeysMatching() {
-        return keysMatching;
+    public Set<String> getKeysMatch() {
+        return keysMatch;
     }
 
-    public List<String> getNodeTestString() {
-        return nodeTestString;
+    public List<String> getNodeMatchString() {
+        return nodeMatchString;
     }
 
     @Override
@@ -42,9 +44,8 @@ public class MergeEntity {
         String newLine = System.getProperty("line.separator");
         result.append(this.getClass().getName() + " {" + newLine);
         result.append(" key: " + getKey() + newLine);
-        result.append(" nodeMatch: " + getNodeMatch() + newLine);
-        result.append(" nodeTestString: " + getNodeTestString() + newLine);
-        result.append(" getKeysMatching: " + getKeysMatching() + newLine);
+        result.append(" nodeMatch: " + getNodeMatchString() + newLine);
+        result.append(" keysMatch: " + getKeysMatch() + newLine);
         result.append("}");
         return result.toString();
     }

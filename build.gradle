@@ -17,10 +17,6 @@ repositories {
     maven { url 'http://repo.spring.io/libs-release' }
 }
 
-configurations {
-    javadoc
-}
-
 buildscript {
     repositories {
         maven { url 'http://repo.spring.io/libs-release' }
@@ -29,6 +25,53 @@ buildscript {
     dependencies {
         classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.2.7.RELEASE'
     }
+}
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+applicationDistribution.from("src/main/resources/") { into "config" }
+
+task genJaxb {
+    ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
+    ext.classesDir = "${buildDir}/classes/jaxb"
+    ext.schema = "dist/Acct.xsd"
+
+    outputs.dir classesDir
+
+    doLast() {
+        project.ant {
+            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
+            mkdir(dir: sourcesDir)
+            mkdir(dir: classesDir)
+
+            xjc(destdir: sourcesDir, schema: schema) {
+                produces(dir: sourcesDir, includes: "**/*.java")
+            }
+
+            javac(destdir: classesDir, source: 1.6, target: 1.6, debug: true,
+                    debugLevel: "lines,vars,source",
+                    classpath: configurations.jaxb.asPath) {
+                src(path: sourcesDir)
+                include(name: "**/*.java")
+                include(name: "*.java")
+            }
+
+            copy(todir: classesDir) {
+                fileset(dir: sourcesDir, erroronmissingdir: false) {
+                    exclude(name: "**/*.java")
+                }
+            }
+        }
+    }
+}
+
+configurations {
+    jaxb
 }
 
 dependencies {
@@ -41,16 +84,9 @@ dependencies {
 
     //SpringBoot
     compile 'org.springframework.boot:spring-boot-starter-batch'
-}
 
-tasks.withType(FindBugs) {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
-}
-
-applicationDistribution.from("src/main/resources/") {
-    exclude('merge*')
-    into "config"
+    //JAXB
+    compile("wsdl4j:wsdl4j:1.6.1")
+    jaxb("com.sun.xml.bind:jaxb-xjc:2.2.4-1")
+    //compile(files(genJaxb.classesDir).builtBy(genJaxb))
 }
