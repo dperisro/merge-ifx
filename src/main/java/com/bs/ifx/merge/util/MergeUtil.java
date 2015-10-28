@@ -54,10 +54,8 @@ public class MergeUtil {
         schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
         schema.setAttribute("xmlns", MergeConfig.BASE_NS + key);
 
-        if (MergeConfig.NS) {
-            if (!key.equals(MergeConfig.BASE_XSD)) {
-                schema.setAttribute("xmlns:base", MergeConfig.BASE_NS + MergeConfig.BASE_XSD);
-            }
+        if (MergeConfig.NS && !key.equals(MergeConfig.BASE_XSD)) {
+            schema.setAttribute("xmlns:base", MergeConfig.BASE_NS + MergeConfig.BASE_XSD);
         }
 
         schema.setAttribute("attributeFormDefault", "unqualified");
