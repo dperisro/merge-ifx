@@ -2,10 +2,20 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.ifxforum.org/IFX_2X"
             attributeFormDefault="unqualified" elementFormDefault="qualified"
             targetNamespace="http://www.ifxforum.org/IFX_2X">
-    <xsd:simpleType name="Acct">
+    <xsd:complexType name="AcctTrnInfo_Type">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" ref="BillRefText"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="BillRefText_Type">
+        <xsd:restriction base="NC">
+            <xsd:maxLength value="80"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="NC">
         <xsd:restriction base="xsd:string"/>
     </xsd:simpleType>
-    <xsd:simpleType name="Bill">
-        <xsd:restriction base="xsd:string"/>
-    </xsd:simpleType>
+    <xsd:element name="BillRefText" type="BillRefText_Type"/>
+
 </xsd:schema>
+
