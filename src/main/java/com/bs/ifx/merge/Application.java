@@ -1,6 +1,5 @@
 package com.bs.ifx.merge;
 
-import com.bs.ifx.merge.services.MergeService;
 import com.bs.ifx.merge.services.MergeService2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +25,6 @@ public class Application implements CommandLineRunner {
      * .
      * Inject mergeService
      */
-    @Autowired
-    private MergeService mergeService;
     @Autowired
     private MergeService2 mergeService2;
 
