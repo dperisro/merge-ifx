@@ -12,10 +12,16 @@ public class MergeConfig {
 
     public static final String VERSION = "1.0";
     public static final String ENCODING = "UTF-8";
-    public static final String COMMON_XSD = "ifx-commons";
+    public static final String COMMON_XSD = "common";
     public static final String EXT_XSD = ".xsd";
-    public static final String BASE_XSD = "base";
-    public static final String BASE_NS = "http://www.ifxforum.org/IFX_2X";
+    public static final String DATATYPE_XSD = "data-types";
+    public static final String BASE_NS = "http://www.ifxforum.org/ifx/";
+
+    private static final String[] DATA_BASE_TYPES = {"C", "NC", "Name", "Name_Type", "Desc", "Desc_Type",
+            "OpenEnum_Type", "ClosedEnum_Type", "DayOfWeek", "DayOfMonth", "DayOfMonth_Type", "Month",
+            "DayOfWeek_Type", "TimeOfDay", "TimeOfDay", "Time_Type", "DateTime_Type", "Date_Type", "Decimal_Type",
+            "Long_Type", "Boolean_Type", "URL_Type", "HexBinary", "UUID_Type", "Identifier_Type", "Timestamp_Type",
+            "PhoneNumber_Type", "IfxPath_Type", "BinData_Type"};
 
     public static final boolean NS = false;
 
@@ -27,18 +33,17 @@ public class MergeConfig {
     @Autowired
     public MergeConfig(@Value("${inputPath}") final String inputPathV,
                        @Value("${outputPath}") final String outputPathV,
-                       @Value("${keys}") final String[] keysV,
-                       @Value("${base}") final String[] baseV) {
+                       @Value("${keys}") final String[] keysV) {
         this.inputPath = inputPathV;
         this.outputPath = outputPathV;
         this.keys = Arrays.asList(keysV);
-        this.base = Arrays.asList(baseV);
+        this.base = Arrays.asList(DATA_BASE_TYPES);
     }
 
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        String newLine = System.getProperty("line.separator");
+        final String newLine = System.getProperty("line.separator");
         result.append(this.getClass().getName() + " {" + newLine);
         result.append(" pathOrigin: " + getInputPath() + newLine);
         result.append(" pathDestination: " + getOutputPath() + newLine);

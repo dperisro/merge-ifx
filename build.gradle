@@ -39,7 +39,7 @@ applicationDistribution.from("src/main/resources/") { into "config" }
 task genJaxb {
     ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
     ext.classesDir = "${buildDir}/classes/jaxb"
-    ext.schema = "dist/Acct.xsd"
+    ext.schema = "dist/Bill.xsd"
 
     outputs.dir classesDir
 
@@ -49,7 +49,11 @@ task genJaxb {
             mkdir(dir: sourcesDir)
             mkdir(dir: classesDir)
 
-            xjc(destdir: sourcesDir, schema: schema) {
+
+
+            xjc(destdir: sourcesDir) {
+                schema(dir: 'dist', includes: '*.xsd')
+                binding(dir: 'xjb', includes: '*.xjb')
                 produces(dir: sourcesDir, includes: "**/*.java")
             }
 
@@ -77,6 +81,8 @@ configurations {
 dependencies {
     compile fileTree(dir: 'lib', include: '*.jar')
     compile 'commons-io:commons-io:2.4'
+
+    compile 'org.apache.commons:commons-lang3:3.4'
 
     //Logger
     compile 'ch.qos.logback:logback-core:1.1.3'

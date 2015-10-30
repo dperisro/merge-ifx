@@ -1,6 +1,7 @@
 package com.bs.ifx.merge;
 
 import com.bs.ifx.merge.services.MergeService;
+import com.bs.ifx.merge.services.MergeService2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class Application implements CommandLineRunner {
      */
     @Autowired
     private MergeService mergeService;
+    @Autowired
+    private MergeService2 mergeService2;
 
     /**
      * .
@@ -46,7 +49,7 @@ public class Application implements CommandLineRunner {
      */
     @Override
     public void run(final String... args) throws Exception {
-        this.mergeService.doMerge();
+        this.mergeService2.doMerge();
     }
 
 

@@ -5,6 +5,7 @@
     <xsd:complexType name="AcctTrnInfo_Type">
         <xsd:sequence>
             <xsd:element minOccurs="0" ref="BillRefText"/>
+            <xsd:element minOccurs="0" ref="AcquirerIdent"/>
         </xsd:sequence>
     </xsd:complexType>
     <xsd:simpleType name="BillRefText_Type">
@@ -12,10 +13,34 @@
             <xsd:maxLength value="80"/>
         </xsd:restriction>
     </xsd:simpleType>
+
+    <xsd:simpleType name="AcctXXXXX">
+        <xsd:restriction base="NC">
+            <xsd:maxLength value="80"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
     <xsd:simpleType name="NC">
         <xsd:restriction base="xsd:string"/>
     </xsd:simpleType>
     <xsd:element name="BillRefText" type="BillRefText_Type"/>
+
+    <xsd:element name="AcquirerIdent" type="AcquirerIdent_Type"/>
+    <xsd:element name="AcctXXXXX_type" type="AcctXXXXX"/>
+
+    <xsd:simpleType name="AcquirerIdent_Type">
+        <xsd:restriction base="NC">
+            <xsd:maxLength value="255"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="BillRefText_XXXX">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" ref="AcctXXXXX_type"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
 
 </xsd:schema>
 

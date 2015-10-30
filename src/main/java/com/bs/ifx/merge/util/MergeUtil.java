@@ -1,61 +1,61 @@
 package com.bs.ifx.merge.util;
 
 import com.bs.ifx.merge.conf.MergeConfig;
-import com.bs.ifx.merge.entities.MergeEntity;
-import com.bs.ifx.merge.entities.MergeErrorHandler;
-import com.bs.ifx.merge.entities.MergeFileFilter;
-import com.bs.ifx.merge.entities.MergeRef;
+import com.bs.ifx.merge.entities.*;
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 public class MergeUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MergeUtil.class);
 
-    public Document createSkeletonFile(final String key) throws ParserConfigurationException, SAXException, IOException, TransformerException {
+    public Document createSkeletonFile(final String key, final Set<String> ns) throws Exception {
         if (MergeConfig.NS) {
-            return createSkeletonFile(null, key);
+            return createSkeletonFileNS(key, ns);
         } else {
-            return createSkeletonFile(null, "");
+            return createSkeletonFileNS("", new HashSet<>());
         }
     }
 
-    public Document createSkeletonFile(final File fileBase, final String key)
+    private Document createSkeletonFileNS(final String key, final Set<String> ns)
             throws ParserConfigurationException, SAXException, IOException, TransformerException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document parent = db.newDocument();
-        if (fileBase != null) {
-            Document template = db.parse(fileBase);
-            parent.setDocumentURI(template.getDocumentURI());
-        }
         parent.setXmlVersion(MergeConfig.VERSION);
         Element schema = parent.createElement("xsd:schema");
         schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
         schema.setAttribute("xmlns", MergeConfig.BASE_NS + key);
 
-        if (MergeConfig.NS && !key.equals(MergeConfig.BASE_XSD)) {
-            schema.setAttribute("xmlns:base", MergeConfig.BASE_NS + MergeConfig.BASE_XSD);
+        if (MergeConfig.NS && !key.equals(MergeConfig.DATATYPE_XSD)) {
+            for (String nspace : ns) {
+                schema.setAttribute("xmlns:" + getPrefixByKey(nspace), MergeConfig.BASE_NS + nspace);
+            }
+            if (!key.equals(MergeConfig.COMMON_XSD)) {
+                schema.setAttribute("xmlns:com", MergeConfig.BASE_NS + MergeConfig.COMMON_XSD);
+            }
         }
 
         schema.setAttribute("attributeFormDefault", "unqualified");
@@ -65,18 +65,47 @@ public class MergeUtil {
         return parent;
     }
 
-    //TODO: Revisar Format & Ident
-    public void writeNode(final String parent, final String fileName, final Node node) throws TransformerException, FileNotFoundException {
-        File outputFile = new File(parent, fileName);
-        LOGGER.info("Writing file " + outputFile.getName());
-        FileOutputStream fos = null;
+    public OutputFormat getPrettyPrintFormat() {
+        OutputFormat format = new OutputFormat();
+        format.setLineWidth(100);
+        format.setIndenting(true);
+        format.setIndent(4);
+        format.setEncoding("UTF-8");
+        return format;
+    }
 
+    public void document2File(final Node doc, final File file) throws Exception {
+        XMLSerializer serializer = new XMLSerializer(new FileOutputStream(file), getPrettyPrintFormat());
+        //loggerDocumentString(doc);
+        serializer.serialize(doc);
+    }
+
+    public void loggerDocumentString(final Node doc) throws Exception {
+        StringWriter stringOut = new StringWriter();
+        XMLSerializer serial = new XMLSerializer(stringOut, getPrettyPrintFormat());
+        serial.serialize(doc);
+        LOGGER.info(stringOut.toString());
+    }
+
+    //TODO: Revisar Format & Ident
+    public void writeNode(final String parent, final String fileName, final Node node) throws Exception {
+        File outputFile = new File(parent, fileName);
+        document2File(node, outputFile);
+
+        /*TransformerFactory t = TransformerFactory.newInstance();
+        Transformer transformer = t.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        t.setAttribute("indent-number", 2);
+        t.setAttribute("width", "50");
+
+        FileOutputStream fos = null;
         try {
-            TransformerFactory e = TransformerFactory.newInstance();
-            Transformer transformer = e.newTransformer();
+
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            e.setAttribute("indent-number", 2);
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
             DOMSource source = new DOMSource(node);
+
             fos = new FileOutputStream(new File(parent, fileName), false);
             StreamResult result = new StreamResult(fos);
             transformer.transform(source, result);
@@ -93,7 +122,11 @@ public class MergeUtil {
             }
 
         }
-        LOGGER.info("Wrote " + outputFile.getName());
+        LOGGER.info("Wrote " + outputFile.getName());*/
+    }
+
+    private String getPrefixByKey(final String key) {
+        return key.substring(0, 3).toLowerCase();
     }
 
     public void prepareOutput(final String outputPath) throws IOException {
@@ -118,18 +151,18 @@ public class MergeUtil {
         }
     }
 
-    public DocumentBuilder getDocumentBuilder() throws Exception {
+    public NodeList getDocumentBuilder(final File file) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         OutputStreamWriter errorWriter = new OutputStreamWriter(System.err, MergeConfig.ENCODING);
         db.setErrorHandler(new MergeErrorHandler(new PrintWriter(errorWriter, true)));
-        return db;
+        return db.parse(file).getChildNodes();
     }
 
     public MergeRef isMatchOtherKeyOrBase(final Node node, final String currentKey, final List<String> keys, final List<String> baseKeys) {
         if (isMatchingNodeBase(node, baseKeys)) {
-            return new MergeRef(MergeConfig.BASE_XSD, true);
+            return new MergeRef(MergeConfig.DATATYPE_XSD, true);
         } else {
             return isMatchNodeWithKeys(node, currentKey, keys);
         }
@@ -149,23 +182,73 @@ public class MergeUtil {
 
     public boolean isMatchingNodeBase(final Node node, final List<String> base) {
         for (String keyWord : base) {
-            if (node.getNodeValue().equals(keyWord)) {
+            if (node.getNodeValue().equalsIgnoreCase(keyWord)) {
                 return true;
             }
         }
-
         return false;
     }
 
+    public String getKeyMatchingNode(final Node node, final List<String> keys) {
+        for (String keyWord : keys) {
+            if (node.getNodeValue().startsWith(keyWord)) {
+                return keyWord;
+            }
+        }
+        return null;
+    }
+
+    public Set<String> depthKeyMatchingNode(final Node node) throws Exception {
+        Set<String> depthKeys = new HashSet<>();
+        return depthKeys;
+        /*if (node.hasChildNodes()) {
+            NodeList list = node.getOwnerDocument().getElementsByTagName("xsd:element");
+            return testElement(list, "type");
+        }
+        return depthKeys;*/
+    }
+
+    private Set<String> testElement(final NodeList list, final String type) {
+        Set<String> depthKeys = new HashSet<>();
+
+        for (int i = 0; i < list.getLength(); i++) {
+            Element first = (Element) list.item(i);
+            if (first.hasAttributes()) {
+                if (type.equals("type")) {
+                    String value = first.getAttribute("type");
+                    if (StringUtils.isNotBlank(value)) {
+                        depthKeys.add(value);
+                    }
+
+                } else if (type.equals("ref")) {
+                    String value = first.getAttribute("base");
+                    if (StringUtils.isNotBlank(value)) {
+                        depthKeys.add(value);
+                    }
+                }
+                if (first.hasChildNodes()) {
+                    depthKeys.addAll(testElement(first.getChildNodes(), type));
+                }
+            }
+        }
+        return depthKeys;
+    }
+
     public boolean isMatchingNode(final Node node, final String key) {
-        if (node.getNodeValue().startsWith(key)) {
+        if (isMatchingNode(node.getNodeValue(), key)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isMatchingNode(String value, final String key) {
+        if (value.startsWith(key)) {
             return true;
         }
         return false;
     }
 
     public void createXSDInclude(final Document messageFile, final MergeEntity entity) {
-        createXSDInclude(messageFile, MergeConfig.COMMON_XSD);
         for (String key : entity.getKeysMatch()) {
             createXSDInclude(messageFile, key);
         }
@@ -186,17 +269,17 @@ public class MergeUtil {
         }
     }
 
-    public void createFile(final String keyWord, final MergeEntity entity, final String outPutPath) throws Exception {
-        Document messageFile = createSkeletonFile(keyWord);
-        if (!keyWord.equals(MergeConfig.BASE_XSD)) {
-            createXSDInclude(messageFile, entity);
-        }
-        for (Node imported : entity.getNodeMatch()) {
-            Node imported2 = messageFile.importNode(imported, true);
+    public void createFile(final String currentKey, final MergeEntity entity, final String outPutPath,
+                           final Map<String, Set<String>> subNodes, List<String> keys) throws Exception {
+        Document messageFile = createSkeletonFile(currentKey, entity.getKeysMatch());
+        createXSDInclude(messageFile, entity);
+        for (MergeNode imported : entity.getNodeMatch().values()) {
+            Node imported2 = messageFile.importNode(imported.getNode(), true);
             messageFile.getDocumentElement().appendChild(imported2);
         }
-        writeNode(outPutPath, keyWord + MergeConfig.EXT_XSD, messageFile);
-
+        writeNode(outPutPath, currentKey + MergeConfig.EXT_XSD, messageFile);
     }
 
 }
+
+
