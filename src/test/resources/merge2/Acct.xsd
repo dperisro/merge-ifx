@@ -37,7 +37,7 @@
 
     <xsd:complexType name="BillRefText_XXXX">
         <xsd:sequence>
-            <xsd:element minOccurs="0" ref="AcctXXXXX_type"/>
+            <xsd:element minOccurs="0" ref="BillRefText"/>
         </xsd:sequence>
     </xsd:complexType>
 

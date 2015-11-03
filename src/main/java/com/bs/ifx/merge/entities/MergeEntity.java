@@ -1,25 +1,20 @@
 package com.bs.ifx.merge.entities;
 
 import com.bs.ifx.merge.conf.MergeConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 import java.util.*;
 
 public class MergeEntity {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MergeEntity.class);
-
     private String key;
-
-    private HashMap<String, MergeNode> nodeMatch;
+    private HashMap<String, Node> nodeMatch;
     private Set<String> keysMatch;
     private Set<String> nodeMatchString;
 
     public MergeEntity(final String keyV) {
         this.key = keyV;
-        this.nodeMatch = new LinkedHashMap<String, MergeNode>();
+        this.nodeMatch = new LinkedHashMap<String, Node>();
         this.nodeMatchString = new LinkedHashSet<>();
         if (keyV.equalsIgnoreCase(MergeConfig.DATATYPE_XSD)) {
             this.keysMatch = new HashSet<String>();
@@ -34,7 +29,7 @@ public class MergeEntity {
         return key;
     }
 
-    public HashMap<String, MergeNode> getNodeMatch() {
+    public HashMap<String, Node> getNodeMatch() {
         return nodeMatch;
     }
 
@@ -46,7 +41,7 @@ public class MergeEntity {
         return nodeMatchString;
     }
 
-    public void addNode(final String nodeValue, final MergeNode clone, Set<String> bOpt) {
+    public void addNode(final String nodeValue, final Node clone, final Set<String> bOpt) {
         if (!getNodeMatch().containsKey(nodeValue)) {
             getNodeMatch().put(nodeValue, clone);
             getNodeMatchString().add(nodeValue);
@@ -54,10 +49,6 @@ public class MergeEntity {
                 getKeysMatch().addAll(bOpt);
             }
         }
-    }
-
-    private MergeRef hasKeydepth(Node clone) {
-        return new MergeRef("key");
     }
 
     @Override

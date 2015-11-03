@@ -1,7 +1,10 @@
 package com.bs.ifx.merge.util;
 
 import com.bs.ifx.merge.conf.MergeConfig;
-import com.bs.ifx.merge.entities.*;
+import com.bs.ifx.merge.entities.MergeEntity;
+import com.bs.ifx.merge.entities.MergeErrorHandler;
+import com.bs.ifx.merge.entities.MergeFileFilter;
+import com.bs.ifx.merge.entities.MergeRef;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import org.apache.commons.io.FileUtils;
@@ -158,14 +161,6 @@ public class MergeUtil {
         return db.parse(file).getChildNodes();
     }
 
-    public MergeRef isMatchOtherKeyOrBase(final Node node, final String currentKey, final Set<String> keys, final Set<String> baseKeys) {
-        if (isMatchingNodeBase(node, baseKeys)) {
-            return new MergeRef(MergeConfig.DATATYPE_XSD, true);
-        } else {
-            return isMatchNodeWithKeys(node, currentKey, keys);
-        }
-    }
-
     public MergeRef isMatchNodeWithKeys(final Node node, final String currentKey, final Set<String> keys) {
         for (String keyWord : keys) {
             if (keyWord.equals(currentKey)) {
@@ -240,7 +235,7 @@ public class MergeUtil {
         return false;
     }
 
-    public boolean isMatchingNode(String value, final String key) {
+    public boolean isMatchingNode(final String value, final String key) {
         if (value.startsWith(key)) {
             return true;
         }
@@ -272,8 +267,8 @@ public class MergeUtil {
         if (!entity.getNodeMatch().isEmpty()) {
             Document messageFile = createSkeletonFile(currentKey, entity.getKeysMatch());
             createXSDInclude(messageFile, entity);
-            for (MergeNode imported : entity.getNodeMatch().values()) {
-                Node imported2 = messageFile.importNode(imported.getNode(), true);
+            for (Node imported : entity.getNodeMatch().values()) {
+                Node imported2 = messageFile.importNode(imported, true);
                 messageFile.getDocumentElement().appendChild(imported2);
             }
             writeNode(outPutPath, currentKey + MergeConfig.EXT_XSD, messageFile);
