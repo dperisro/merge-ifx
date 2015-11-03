@@ -4,6 +4,7 @@ import com.bs.ifx.merge.conf.MergeConfig;
 import com.bs.ifx.merge.entities.MergeEntity;
 import com.bs.ifx.merge.entities.MergeFileFilter;
 import com.bs.ifx.merge.entities.MergeNode;
+import com.bs.ifx.merge.entities.MergeRef;
 import com.bs.ifx.merge.util.MergeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.w3c.dom.NodeList;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +28,6 @@ public class MergeService2 extends MergeUtil {
 
     private String[] filesXSD;
     private static Map<String, MergeEntity> mapNodes = new LinkedHashMap<>();
-    private static Map<String, Set<String>> subNodes = new LinkedHashMap<>();
 
     @Autowired
     private MergeConfig config;
@@ -45,20 +46,30 @@ public class MergeService2 extends MergeUtil {
     }
 
     public void doMerge() throws Exception {
-
-        Map<String, Set<String>> mapKeys = new LinkedHashMap<>();
-
         for (String inputFile : filesXSD) {
             prepareByFile(new File(config.getInputPath(), inputFile));
         }
-        LOGGER.info("mapNodes: " + mapNodes.toString());
-        LOGGER.info("subNodes: " + subNodes.toString());
-
         for (String keyWord : mapNodes.keySet()) {
+            prepareSubKeys(keyWord);
             MergeEntity entity = mapNodes.get(keyWord);
-            createFile(keyWord, entity, config.getOutputPath(), subNodes, config.getKeys());
+            createFile(keyWord, entity, config.getOutputPath());
         }
+        LOGGER.info("mapNodes: " + mapNodes.toString());
+    }
 
+    private void prepareSubKeys(final String keyWord) throws Exception {
+        Set<String> subKeys = new LinkedHashSet<>();
+        for (MergeNode node : mapNodes.get(keyWord).getNodeMatch().values()) {
+            Set<String> depthKeys = iterateElements(node.getNode().getChildNodes());
+            for (String subNode : depthKeys) {
+                MergeRef mergeRef = isMatchNodeWithKeys(subNode, keyWord, config.getKeys());
+                if (mergeRef.isRef()) {
+                    subKeys.add(mergeRef.getName());
+                }
+            }
+        }
+        mapNodes.get(keyWord).getKeysMatch().addAll(subKeys);
+        LOGGER.info("######### keyWord: " + keyWord + ", depthKeys: " + subKeys);
     }
 
     private void prepareByFile(final File file) throws Exception {
@@ -72,7 +83,6 @@ public class MergeService2 extends MergeUtil {
                     Node clone = childNodes2.item(j).cloneNode(true);
                     MergeNode mergeNode = new MergeNode(clone, node.getNodeValue());
                     String keyMatch = getKeyMatchingNode(node, config.getKeys());
-                    subNodes.put(node.getNodeValue(), depthKeyMatchingNode(node));
                     if (isMatchingNodeBase(node, config.getBase())) {
                         mapNodes.get(MergeConfig.DATATYPE_XSD).addNode(node.getNodeValue(), mergeNode, null);
                     } else if (keyMatch != null) {

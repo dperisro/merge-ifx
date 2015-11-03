@@ -21,8 +21,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.*;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -160,7 +158,7 @@ public class MergeUtil {
         return db.parse(file).getChildNodes();
     }
 
-    public MergeRef isMatchOtherKeyOrBase(final Node node, final String currentKey, final List<String> keys, final List<String> baseKeys) {
+    public MergeRef isMatchOtherKeyOrBase(final Node node, final String currentKey, final Set<String> keys, final Set<String> baseKeys) {
         if (isMatchingNodeBase(node, baseKeys)) {
             return new MergeRef(MergeConfig.DATATYPE_XSD, true);
         } else {
@@ -168,7 +166,7 @@ public class MergeUtil {
         }
     }
 
-    public MergeRef isMatchNodeWithKeys(final Node node, final String currentKey, final List<String> keys) {
+    public MergeRef isMatchNodeWithKeys(final Node node, final String currentKey, final Set<String> keys) {
         for (String keyWord : keys) {
             if (keyWord.equals(currentKey)) {
                 continue;
@@ -180,7 +178,19 @@ public class MergeUtil {
         return new MergeRef();
     }
 
-    public boolean isMatchingNodeBase(final Node node, final List<String> base) {
+    public MergeRef isMatchNodeWithKeys(final String subNode, final String currentKey, final Set<String> keys) {
+        for (String keyWord : keys) {
+            if (keyWord.equals(currentKey)) {
+                continue;
+            }
+            if (isMatchingNode(subNode, keyWord)) {
+                return new MergeRef(keyWord);
+            }
+        }
+        return new MergeRef();
+    }
+
+    public boolean isMatchingNodeBase(final Node node, final Set<String> base) {
         for (String keyWord : base) {
             if (node.getNodeValue().equalsIgnoreCase(keyWord)) {
                 return true;
@@ -189,7 +199,7 @@ public class MergeUtil {
         return false;
     }
 
-    public String getKeyMatchingNode(final Node node, final List<String> keys) {
+    public String getKeyMatchingNode(final Node node, final Set<String> keys) {
         for (String keyWord : keys) {
             if (node.getNodeValue().startsWith(keyWord)) {
                 return keyWord;
@@ -198,37 +208,25 @@ public class MergeUtil {
         return null;
     }
 
-    //TODO: Pendiente arreglar metodo
-    public Set<String> depthKeyMatchingNode(final Node node) throws Exception {
+    public Set<String> iterateElements(final NodeList list) {
         Set<String> depthKeys = new HashSet<>();
-        return depthKeys;
-        /*if (node.hasChildNodes()) {
-            NodeList list = node.getOwnerDocument().getElementsByTagName("xsd:element");
-            return testElement(list, "type");
-        }
-        return depthKeys;*/
-    }
-
-    private Set<String> testElement(final NodeList list, final String type) {
-        Set<String> depthKeys = new HashSet<>();
-
         for (int i = 0; i < list.getLength(); i++) {
-            Element first = (Element) list.item(i);
-            if (first.hasAttributes()) {
-                if (type.equals("type")) {
-                    String value = first.getAttribute("type");
-                    if (StringUtils.isNotBlank(value)) {
-                        depthKeys.add(value);
+            if (list.item(i) instanceof Element) {
+                Element first = (Element) list.item(i);
+                if (first.hasAttributes()) {
+                    String valueType = first.getAttribute("type");
+                    String valueRef = first.getAttribute("ref");
+                    if (StringUtils.isNotBlank(valueType)) {
+                        depthKeys.add(valueType);
                     }
-
-                } else if (type.equals("ref")) {
-                    String value = first.getAttribute("base");
-                    if (StringUtils.isNotBlank(value)) {
-                        depthKeys.add(value);
+                    if (StringUtils.isNotBlank(valueRef)) {
+                        depthKeys.add(valueRef);
                     }
                 }
+
                 if (first.hasChildNodes()) {
-                    depthKeys.addAll(testElement(first.getChildNodes(), type));
+                    NodeList list2 = first.getElementsByTagName("*");
+                    depthKeys.addAll(iterateElements(list2));
                 }
             }
         }
@@ -270,17 +268,17 @@ public class MergeUtil {
         }
     }
 
-    public void createFile(final String currentKey, final MergeEntity entity, final String outPutPath,
-                           final Map<String, Set<String>> subNodes, List<String> keys) throws Exception {
-        Document messageFile = createSkeletonFile(currentKey, entity.getKeysMatch());
-        createXSDInclude(messageFile, entity);
-        for (MergeNode imported : entity.getNodeMatch().values()) {
-            Node imported2 = messageFile.importNode(imported.getNode(), true);
-            messageFile.getDocumentElement().appendChild(imported2);
+    public void createFile(final String currentKey, final MergeEntity entity, final String outPutPath) throws Exception {
+        if (!entity.getNodeMatch().isEmpty()) {
+            Document messageFile = createSkeletonFile(currentKey, entity.getKeysMatch());
+            createXSDInclude(messageFile, entity);
+            for (MergeNode imported : entity.getNodeMatch().values()) {
+                Node imported2 = messageFile.importNode(imported.getNode(), true);
+                messageFile.getDocumentElement().appendChild(imported2);
+            }
+            writeNode(outPutPath, currentKey + MergeConfig.EXT_XSD, messageFile);
         }
-        writeNode(outPutPath, currentKey + MergeConfig.EXT_XSD, messageFile);
     }
-
 }
 
 

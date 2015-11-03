@@ -36,4 +36,15 @@ public class MergeRef {
         return name;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        String newLine = System.getProperty("line.separator");
+        result.append(this.getClass().getName() + " {" + newLine);
+        result.append(" ref: " + isRef() + newLine);
+        result.append(" name: " + getName() + newLine);
+        result.append("}");
+        return result.toString();
+    }
+
 }

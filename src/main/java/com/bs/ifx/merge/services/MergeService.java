@@ -141,7 +141,7 @@ public class MergeService extends MergeUtil {
         LOGGER.info("mapNodes: " + mapNodes.toString());
         LOGGER.info("commonNodesTest: " + commonNodesString.toString());
         for (String keyWord : mapNodes.keySet()) {
-            createFile(keyWord, mapNodes.get(keyWord), config.getOutputPath(), null, null);
+            //createFile(keyWord, mapNodes.get(keyWord), config.getOutputPath(), null, null);
         }
     }
 

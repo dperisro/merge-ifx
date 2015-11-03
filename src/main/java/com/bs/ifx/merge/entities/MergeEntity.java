@@ -15,12 +15,12 @@ public class MergeEntity {
 
     private HashMap<String, MergeNode> nodeMatch;
     private Set<String> keysMatch;
-    private List<String> nodeMatchString;
+    private Set<String> nodeMatchString;
 
     public MergeEntity(final String keyV) {
         this.key = keyV;
         this.nodeMatch = new LinkedHashMap<String, MergeNode>();
-        this.nodeMatchString = new ArrayList<String>();
+        this.nodeMatchString = new LinkedHashSet<>();
         if (keyV.equalsIgnoreCase(MergeConfig.DATATYPE_XSD)) {
             this.keysMatch = new HashSet<String>();
         } else if (keyV.equalsIgnoreCase(MergeConfig.COMMON_XSD)) {
@@ -42,7 +42,7 @@ public class MergeEntity {
         return keysMatch;
     }
 
-    public List<String> getNodeMatchString() {
+    public Set<String> getNodeMatchString() {
         return nodeMatchString;
     }
 

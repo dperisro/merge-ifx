@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Component
 public class MergeConfig {
@@ -27,8 +28,8 @@ public class MergeConfig {
 
     private final String inputPath;
     private final String outputPath;
-    private final List<String> keys;
-    private final List<String> base;
+    private final Set<String> keys;
+    private final Set<String> base;
 
     @Autowired
     public MergeConfig(@Value("${inputPath}") final String inputPathV,
@@ -36,8 +37,8 @@ public class MergeConfig {
                        @Value("${keys}") final String[] keysV) {
         this.inputPath = inputPathV;
         this.outputPath = outputPathV;
-        this.keys = Arrays.asList(keysV);
-        this.base = Arrays.asList(DATA_BASE_TYPES);
+        this.keys = new LinkedHashSet<>(Arrays.asList(keysV));
+        this.base = new LinkedHashSet<>(Arrays.asList(DATA_BASE_TYPES));
     }
 
     @Override
@@ -61,11 +62,11 @@ public class MergeConfig {
         return outputPath;
     }
 
-    public List<String> getKeys() {
+    public Set<String> getKeys() {
         return keys;
     }
 
-    public List<String> getBase() {
+    public Set<String> getBase() {
         return base;
     }
 
