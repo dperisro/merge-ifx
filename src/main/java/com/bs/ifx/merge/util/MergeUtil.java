@@ -77,7 +77,7 @@ public class MergeUtil {
 
     public void document2File(final Node doc, final File file) throws Exception {
         XMLSerializer serializer = new XMLSerializer(new FileOutputStream(file), getPrettyPrintFormat());
-        //loggerDocumentString(doc);
+        loggerDocumentString(doc);
         serializer.serialize(doc);
     }
 
@@ -85,7 +85,7 @@ public class MergeUtil {
         StringWriter stringOut = new StringWriter();
         XMLSerializer serial = new XMLSerializer(stringOut, getPrettyPrintFormat());
         serial.serialize(doc);
-        LOGGER.info(stringOut.toString());
+        LOGGER.debug(stringOut.toString());
     }
 
     //TODO: Revisar Format & Ident
@@ -161,18 +161,6 @@ public class MergeUtil {
         return db.parse(file).getChildNodes();
     }
 
-    public MergeRef isMatchNodeWithKeys(final Node node, final String currentKey, final Set<String> keys) {
-        for (String keyWord : keys) {
-            if (keyWord.equals(currentKey)) {
-                continue;
-            }
-            if (isMatchingNode(node, keyWord)) {
-                return new MergeRef(keyWord);
-            }
-        }
-        return new MergeRef();
-    }
-
     public MergeRef isMatchNodeWithKeys(final String subNode, final String currentKey, final Set<String> keys) {
         for (String keyWord : keys) {
             if (keyWord.equals(currentKey)) {
@@ -228,13 +216,6 @@ public class MergeUtil {
         return depthKeys;
     }
 
-    public boolean isMatchingNode(final Node node, final String key) {
-        if (isMatchingNode(node.getNodeValue(), key)) {
-            return true;
-        }
-        return false;
-    }
-
     public boolean isMatchingNode(final String value, final String key) {
         if (value.startsWith(key)) {
             return true;
@@ -264,7 +245,7 @@ public class MergeUtil {
     }
 
     public void createFile(final String currentKey, final MergeEntity entity, final String outPutPath) throws Exception {
-        if (!entity.getNodeMatch().isEmpty()) {
+        if (!entity.getNodeMatch().isEmpty() || currentKey.equalsIgnoreCase(MergeConfig.DATATYPE_XSD)) {
             Document messageFile = createSkeletonFile(currentKey, entity.getKeysMatch());
             createXSDInclude(messageFile, entity);
             for (Node imported : entity.getNodeMatch().values()) {
