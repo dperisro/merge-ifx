@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -28,17 +27,14 @@ public class DownLoadService {
     private MergeConfig config;
 
     public void doDownLoad() throws Exception {
+        LOGGER.info("isDownloadIFX: " + config.isDownloadIFX());
         if (config.isDownloadIFX()) {
-            LOGGER.info("isDownloadIFX: " + config.isDownloadIFX());
+            prepareInputDownload();
             donwLoadIFXObject();
             unzipDownloadFiles();
         }
     }
 
-    @PostConstruct
-    private void init() throws Exception {
-        prepareInputDownload();
-    }
 
     private void unzipDownloadFiles() throws Exception {
         String[] filesZip = new File(config.getInputPath()).list();

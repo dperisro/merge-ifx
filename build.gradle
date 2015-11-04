@@ -49,15 +49,13 @@ task genJaxb {
             mkdir(dir: sourcesDir)
             mkdir(dir: classesDir)
 
-
-
             xjc(destdir: sourcesDir) {
                 schema(dir: 'dist', includes: '*.xsd')
-                binding(dir: 'xjb', includes: '*.xjb')
+                //binding(dir: 'xjb', includes: '*.xjb')
                 produces(dir: sourcesDir, includes: "**/*.java")
             }
 
-            javac(destdir: classesDir, source: 1.6, target: 1.6, debug: true,
+            javac(destdir: classesDir, source: 1.8, target: 1.8, debug: true,
                     debugLevel: "lines,vars,source",
                     classpath: configurations.jaxb.asPath) {
                 src(path: sourcesDir)
@@ -83,9 +81,8 @@ configurations {
 }
 
 dependencies {
-    compile fileTree(dir: 'lib', include: '*.jar')
+    //compile fileTree(dir: 'lib', include: '*.jar')
     compile 'commons-io:commons-io:2.4'
-
     compile 'org.apache.commons:commons-lang3:3.4'
 
     //Logger

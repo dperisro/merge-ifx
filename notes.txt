@@ -1,0 +1,15 @@
+Objetivos
+
+-	Extender y modificar el modelo IFX correctamente (sin modificar los esquemas originales), asignando namespace a las entidades (si hay muchos problemas lo revisamos)
+-	Metodología y/o herramientas (si es necesario podríamos modificar la herramienta de “merge”) para solventar el problema del “inline” de los esquemas descargados de IFX
+-	Generación de los objetos JAXB de manera optimizada
+-	Definición de la granularidad de objetos a nivel de esquemas y namespace
+-	Definición del úso del framework IFX  a nivel de definición de framework y estructuras de datos (xxxRec, xxxRel, xxxKeys, xxxRef, …)
+
+
+OBJETIVO: Obtener esquemas diferenciados para las entidades de negocio (nivel 1), y posibilitar la creación de esquemas diferenciados por conceptos lógicos del diccionario de datos (nivel 2).
+
+-	PROPUESTA DE SOLUCIÓN: Modificar la herramienta de merge:
+o	Parámetros de entrada: ficheros XSD y lista de palabras clave.
+o	Salida: Se genera un fichero XSD con los elementos/tipos que empiecen por palabra clave  + un fichero extra con los otros elementos/tipos.
+?	NAMESPACES: El objetivo es que cada entidad tenga un namespace propio. Si de entrada es complejo (imports y alias vs includes), probamos la solución con el namespace por defecto que genera ahora y dejamos el tema de los namespaces para una segunda iteración.
