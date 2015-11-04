@@ -25,7 +25,7 @@ public class MergeEntity {
         }
     }
 
-    public String getKey() {
+    private String getKey() {
         return key;
     }
 
@@ -37,14 +37,14 @@ public class MergeEntity {
         return keysMatch;
     }
 
-    public Set<String> getNodeMatchString() {
-        return nodeMatchString;
+    public boolean hasEmptyNodes() {
+        return getNodeMatch().isEmpty();
     }
 
     public void addNode(final String nodeValue, final Node clone, final Set<String> bOpt) {
         if (!getNodeMatch().containsKey(nodeValue)) {
             getNodeMatch().put(nodeValue, clone);
-            getNodeMatchString().add(nodeValue);
+            nodeMatchString.add(nodeValue);
             if (bOpt != null) {
                 getKeysMatch().addAll(bOpt);
             }
@@ -57,7 +57,7 @@ public class MergeEntity {
         String newLine = System.getProperty("line.separator");
         result.append(this.getClass().getName() + " {" + newLine);
         result.append(" key: " + getKey() + newLine);
-        result.append(" nodeMatch: " + getNodeMatchString() + newLine);
+        result.append(" nodeMatch: " + nodeMatchString + newLine);
         result.append(" keysMatch: " + getKeysMatch() + newLine);
         result.append("}");
         return result.toString();

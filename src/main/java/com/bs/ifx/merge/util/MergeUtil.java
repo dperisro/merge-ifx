@@ -244,8 +244,9 @@ public class MergeUtil {
         }
     }
 
-    public void createFile(final String currentKey, final MergeEntity entity, final String outPutPath) throws Exception {
-        if (!entity.getNodeMatch().isEmpty() || currentKey.equalsIgnoreCase(MergeConfig.DATATYPE_XSD)) {
+    public void createFile(final String currentKey, final MergeEntity entity, final String outPutPath)
+            throws Exception {
+        if (!entity.hasEmptyNodes() || currentKey.equalsIgnoreCase(MergeConfig.DATATYPE_XSD)) {
             Document messageFile = createSkeletonFile(currentKey, entity.getKeysMatch());
             createXSDInclude(messageFile, entity);
             for (Node imported : entity.getNodeMatch().values()) {

@@ -61,13 +61,12 @@ public class MergeService extends MergeUtil {
             Set<String> depthKeys = iterateElements(node.getChildNodes());
             for (String subNode : depthKeys) {
                 MergeRef mergeRef = isMatchNodeWithKeys(subNode, keyWord, config.getKeys());
-                if (mergeRef.isRef()) {
+                if (mergeRef.isRef() && !mapNodes.get(mergeRef.getName()).hasEmptyNodes()) {
                     subKeys.add(mergeRef.getName());
                 }
             }
         }
         mapNodes.get(keyWord).getKeysMatch().addAll(subKeys);
-        LOGGER.info("######### keyWord: " + keyWord + ", depthKeys: " + subKeys);
     }
 
     private void prepareByFile(final File file) throws Exception {
