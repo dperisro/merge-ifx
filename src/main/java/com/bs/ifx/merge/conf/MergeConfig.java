@@ -26,15 +26,18 @@ public class MergeConfig {
 
     public static final boolean NS = false;
 
+    private final boolean downloadIFX;
     private final String inputPath;
     private final String outputPath;
     private final Set<String> keys;
     private final Set<String> base;
 
     @Autowired
-    public MergeConfig(@Value("${inputPath}") final String inputPathV,
+    public MergeConfig(@Value("${downloadIFX}") final boolean downloadIFXV,
+                       @Value("${inputPath}") final String inputPathV,
                        @Value("${outputPath}") final String outputPathV,
                        @Value("${keys}") final String[] keysV) {
+        this.downloadIFX = downloadIFXV;
         this.inputPath = inputPathV;
         this.outputPath = outputPathV;
         this.keys = new LinkedHashSet<>(Arrays.asList(keysV));
@@ -46,6 +49,7 @@ public class MergeConfig {
         StringBuilder result = new StringBuilder();
         final String newLine = System.getProperty("line.separator");
         result.append(this.getClass().getName() + " {" + newLine);
+        result.append(" downloadIFX: " + isDownloadIFX() + newLine);
         result.append(" pathOrigin: " + getInputPath() + newLine);
         result.append(" pathDestination: " + getOutputPath() + newLine);
         result.append(" keys: " + getKeys() + newLine);
@@ -69,5 +73,10 @@ public class MergeConfig {
     public Set<String> getBase() {
         return base;
     }
+
+    public boolean isDownloadIFX() {
+        return downloadIFX;
+    }
+
 
 }

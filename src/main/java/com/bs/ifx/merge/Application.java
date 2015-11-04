@@ -1,5 +1,6 @@
 package com.bs.ifx.merge;
 
+import com.bs.ifx.merge.services.DownLoadService;
 import com.bs.ifx.merge.services.MergeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +24,11 @@ public class Application implements CommandLineRunner {
 
     /**
      * .
-     * Inject mergeService
+     * Injects
      */
+    @Autowired
+    private DownLoadService downLoadService;
+
     @Autowired
     private MergeService mergeService;
 
@@ -46,7 +50,8 @@ public class Application implements CommandLineRunner {
      */
     @Override
     public void run(final String... args) throws Exception {
-        this.mergeService.doMerge();
+        this.downLoadService.doDownLoad();
+        //this.mergeService.doMerge();
     }
 
 

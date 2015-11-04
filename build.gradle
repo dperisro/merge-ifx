@@ -74,6 +74,10 @@ task genJaxb {
     }
 }
 
+checkstyle {
+    toolVersion = "6.0"
+}
+
 configurations {
     jaxb
 }
@@ -90,6 +94,10 @@ dependencies {
 
     //SpringBoot
     compile 'org.springframework.boot:spring-boot-starter-batch'
+
+    //Download Libs
+    compile 'org.seleniumhq.selenium:selenium-server:2.48.2'
+    compile 'net.lingala.zip4j:zip4j:1.2.3'
 
     //JAXB
     compile("wsdl4j:wsdl4j:1.6.1")

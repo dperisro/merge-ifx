@@ -13,7 +13,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -31,7 +30,6 @@ public class MergeService extends MergeUtil {
     @Autowired
     private MergeConfig config;
 
-    @PostConstruct
     private void init() throws Exception {
         LOGGER.info(config.toString());
         prepareInput(config.getInputPath());
@@ -45,6 +43,7 @@ public class MergeService extends MergeUtil {
     }
 
     public void doMerge() throws Exception {
+        init();
         for (String inputFile : filesXSD) {
             prepareByFile(new File(config.getInputPath(), inputFile));
         }
