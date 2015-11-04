@@ -5980,5 +5980,5 @@
   <xsd:element name="XferPayee" type="XferPayee_Type"/>
 </xsd:schema>
 <!--Copyright 2015 IFX Forum, Inc. All rights reserved.-->
-<!--Schema for IFX Object AcctAcctRel extracted on Nov 4, 2015 5:33:57 AM from database 2.4 Errata 2015-03-09 2015-02-11-->
+<!--Schema for IFX Object AcctAcctRel extracted on Nov 4, 2015 5:37:48 AM from database 2.4 Errata 2015-03-09 2015-02-11-->
 <!--User elected to handle abstract elements with xsd:choice-->
