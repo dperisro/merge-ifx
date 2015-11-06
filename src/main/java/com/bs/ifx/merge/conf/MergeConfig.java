@@ -1,15 +1,20 @@
 package com.bs.ifx.merge.conf;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.io.InputStream;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class MergeConfig {
+
+    private static final String FILE_URL = "application.properties";
+    private static final Logger LOGGER = LoggerFactory.getLogger(MergeConfig.class);
 
     public static final String VERSION = "1.0";
     public static final String ENCODING = "UTF-8";
@@ -31,6 +36,7 @@ public class MergeConfig {
     private final String outputPath;
     private final Set<String> keys;
     private final Set<String> base;
+    private final Map<String, Set<String>> exceptions;
 
     @Autowired
     public MergeConfig(@Value("${downloadIFX}") final boolean downloadIFXV,
@@ -42,6 +48,43 @@ public class MergeConfig {
         this.outputPath = outputPathV;
         this.keys = new LinkedHashSet<>(Arrays.asList(keysV));
         this.base = new LinkedHashSet<>(Arrays.asList(DATA_BASE_TYPES));
+        this.exceptions = initExceptions();
+    }
+
+    //CHECKSTYLE:OFF
+    private Map<String, Set<String>> initExceptions() {
+        final Map<String, String> mapTemp = new HashMap<String, String>();
+        Map<String, Set<String>> exceptions = new LinkedHashMap<String, Set<String>>();
+        try {
+            InputStream fis = this.getClass().getClassLoader().getResourceAsStream(FILE_URL);
+            ResourceBundle resources = new PropertyResourceBundle(fis);
+            Enumeration<String> keys = resources.getKeys();
+            while (keys.hasMoreElements()) {
+                String key = keys.nextElement();
+                mapTemp.put(key, resources.getString(key));
+            }
+
+            exceptions = mapTemp.entrySet()
+                    .stream()
+                    .filter(p -> p.getKey().startsWith("exception.key"))
+                    .collect(Collectors.toMap(
+                            p -> prepareKeyHeader(p.getKey()),
+                            p -> prepareValue(p.getValue())));
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
+        return exceptions;
+    }
+    //CHECKSTYLE:ON
+
+    private static String prepareKeyHeader(final String key) {
+        return key.replaceAll("exception.key.", "");
+    }
+
+    private static Set<String> prepareValue(final String keysV) {
+        return new LinkedHashSet<>(Arrays.asList(keysV.split(",")));
     }
 
     @Override
@@ -54,6 +97,7 @@ public class MergeConfig {
         result.append(" pathDestination: " + getOutputPath() + newLine);
         result.append(" keys: " + getKeys() + newLine);
         result.append(" base: " + getBase() + newLine);
+        result.append(" exceptions: " + getExceptions() + newLine);
         result.append("}");
         return result.toString();
     }
@@ -76,6 +120,10 @@ public class MergeConfig {
 
     public boolean isDownloadIFX() {
         return downloadIFX;
+    }
+
+    public Map<String, Set<String>> getExceptions() {
+        return exceptions;
     }
 
 

@@ -24,6 +24,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.*;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -256,6 +257,16 @@ public class MergeUtil {
             writeNode(outPutPath, currentKey + MergeConfig.EXT_XSD, messageFile);
         }
     }
+
+    public String getKeysByValue(Map<String, Set<String>> map, String v) {
+        for (String k : map.keySet()) {
+            if (map.get(k).contains(v)) {
+                return k;
+            }
+        }
+        return "";
+    }
+
 }
 
 

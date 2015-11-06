@@ -5,6 +5,7 @@ import com.bs.ifx.merge.entities.MergeEntity;
 import com.bs.ifx.merge.entities.MergeFileFilter;
 import com.bs.ifx.merge.entities.MergeRef;
 import com.bs.ifx.merge.util.MergeUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class MergeService extends MergeUtil {
             MergeEntity entity = mapNodes.get(keyWord);
             createFile(keyWord, entity, config.getOutputPath());
         }
-        LOGGER.info("mapNodes: " + mapNodes.toString());
+        //LOGGER.info("mapNodes: " + mapNodes.toString());
     }
 
     private void prepareSubKeys(final String keyWord) throws Exception {
@@ -79,8 +80,12 @@ public class MergeService extends MergeUtil {
                     Node node = childNodes2.item(j).getAttributes().getNamedItem("name");
                     Node clone = childNodes2.item(j).cloneNode(true);
                     String keyMatch = getKeyMatchingNode(node, config.getKeys());
+                    String keyException = getKeysByValue(config.getExceptions(), node.getNodeValue());
                     if (isMatchingNodeBase(node, config.getBase())) {
                         mapNodes.get(MergeConfig.DATATYPE_XSD).addNode(node.getNodeValue(), clone, null);
+                    } else if (StringUtils.isNotBlank(keyException)) {
+                        LOGGER.info("getKeysByValue:  " + node.getNodeValue() + ", " + keyException);
+                        mapNodes.get(keyException).addNode(node.getNodeValue(), clone, null);
                     } else if (keyMatch != null) {
                         mapNodes.get(keyMatch).addNode(node.getNodeValue(), clone, null);
                     } else {
