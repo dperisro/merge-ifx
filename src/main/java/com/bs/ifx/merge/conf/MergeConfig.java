@@ -1,5 +1,6 @@
 package com.bs.ifx.merge.conf;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,10 @@ public class MergeConfig {
 
     public static final String VERSION = "1.0";
     public static final String ENCODING = "UTF-8";
-    public static final String COMMON_XSD = "common";
+    public static final String IDS_XSD = "2-ids";
+    public static final String COMMON_XSD = "3-common";
     public static final String EXT_XSD = ".xsd";
-    public static final String DATATYPE_XSD = "data-types";
+    public static final String DATATYPE_XSD = "1-data-types";
     public static final String BASE_NS = "http://www.ifxforum.org/ifx/";
 
     private static final String[] DATA_BASE_TYPES = {"C", "NC", "Name", "Name_Type", "Desc", "Desc_Type",
@@ -84,7 +86,8 @@ public class MergeConfig {
     }
 
     private static Set<String> prepareValue(final String keysV) {
-        return new LinkedHashSet<>(Arrays.asList(keysV.split(",")));
+        String deleteWhitespace = StringUtils.deleteWhitespace(keysV);
+        return new LinkedHashSet<>(Arrays.asList(deleteWhitespace.split(",")));
     }
 
     @Override

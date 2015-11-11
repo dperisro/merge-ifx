@@ -41,6 +41,7 @@ public class MergeService extends MergeUtil {
         }
         mapNodes.put(MergeConfig.DATATYPE_XSD, new MergeEntity(MergeConfig.DATATYPE_XSD));
         mapNodes.put(MergeConfig.COMMON_XSD, new MergeEntity(MergeConfig.COMMON_XSD));
+        mapNodes.put(MergeConfig.IDS_XSD, new MergeEntity(MergeConfig.IDS_XSD));
     }
 
     public void doMerge() throws Exception {
@@ -53,7 +54,7 @@ public class MergeService extends MergeUtil {
             MergeEntity entity = mapNodes.get(keyWord);
             createFile(keyWord, entity, config.getOutputPath());
         }
-        //LOGGER.info("mapNodes: " + mapNodes.toString());
+        LOGGER.info("mapNodes: " + mapNodes.toString());
     }
 
     private void prepareSubKeys(final String keyWord) throws Exception {
@@ -84,7 +85,7 @@ public class MergeService extends MergeUtil {
                     if (isMatchingNodeBase(node, config.getBase())) {
                         mapNodes.get(MergeConfig.DATATYPE_XSD).addNode(node.getNodeValue(), clone, null);
                     } else if (StringUtils.isNotBlank(keyException)) {
-                        LOGGER.info("getKeysByValue:  " + node.getNodeValue() + ", " + keyException);
+                        //LOGGER.info("getKeysByValue:  " + node.getNodeValue() + ", " + keyException);
                         mapNodes.get(keyException).addNode(node.getNodeValue(), clone, null);
                     } else if (keyMatch != null) {
                         mapNodes.get(keyMatch).addNode(node.getNodeValue(), clone, null);
