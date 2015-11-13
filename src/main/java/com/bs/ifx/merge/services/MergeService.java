@@ -41,7 +41,6 @@ public class MergeService extends MergeUtil {
         }
         mapNodes.put(MergeConfig.DATATYPE_XSD, new MergeEntity(MergeConfig.DATATYPE_XSD));
         mapNodes.put(MergeConfig.COMMON_XSD, new MergeEntity(MergeConfig.COMMON_XSD));
-        mapNodes.put(MergeConfig.IDS_XSD, new MergeEntity(MergeConfig.IDS_XSD));
     }
 
     public void doMerge() throws Exception {
@@ -50,7 +49,9 @@ public class MergeService extends MergeUtil {
             prepareByFile(new File(config.getInputPath(), inputFile));
         }
         for (String keyWord : mapNodes.keySet()) {
-            prepareSubKeys(keyWord);
+            if (!keyWord.equals(MergeConfig.COMMON_XSD)) {
+                prepareSubKeys(keyWord);
+            }
             MergeEntity entity = mapNodes.get(keyWord);
             createFile(keyWord, entity, config.getOutputPath());
         }

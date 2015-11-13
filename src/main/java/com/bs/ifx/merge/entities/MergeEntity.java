@@ -18,13 +18,10 @@ public class MergeEntity {
         this.nodeMatchString = new LinkedHashSet<>();
         if (keyV.equalsIgnoreCase(MergeConfig.DATATYPE_XSD)) {
             this.keysMatch = new HashSet<String>();
-        } else if (keyV.equalsIgnoreCase(MergeConfig.IDS_XSD)) {
-            this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD));
         } else if (keyV.equalsIgnoreCase(MergeConfig.COMMON_XSD)) {
-            //this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD));
-            this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD, MergeConfig.IDS_XSD));
+            this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD));
         } else {
-            this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD, MergeConfig.IDS_XSD, MergeConfig.COMMON_XSD));
+            this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD, MergeConfig.COMMON_XSD));
         }
     }
 

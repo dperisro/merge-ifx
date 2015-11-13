@@ -259,8 +259,9 @@ public class MergeUtil {
     }
 
     public String getKeysByValue(Map<String, Set<String>> map, String v) {
+        String valueType = v.replaceAll("_Type", "");
         for (String k : map.keySet()) {
-            if (map.get(k).contains(v)) {
+            if (map.get(k).contains(v) || map.get(k).contains(valueType)) {
                 return k;
             }
         }
