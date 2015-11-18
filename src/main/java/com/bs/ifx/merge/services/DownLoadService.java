@@ -35,7 +35,6 @@ public class DownLoadService {
         }
     }
 
-
     private void unzipDownloadFiles() throws Exception {
         String[] filesZip = new File(config.getInputPath()).list();
         for (String zip : filesZip) {

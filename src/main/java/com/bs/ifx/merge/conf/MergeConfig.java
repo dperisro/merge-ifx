@@ -56,17 +56,17 @@ public class MergeConfig {
     //CHECKSTYLE:OFF
     private Map<String, Set<String>> initExceptions() {
         final Map<String, String> mapTemp = new HashMap<String, String>();
-        Map<String, Set<String>> exceptions = new LinkedHashMap<String, Set<String>>();
+        Map<String, Set<String>> exceptionsValue = new LinkedHashMap<String, Set<String>>();
         try {
             InputStream fis = this.getClass().getClassLoader().getResourceAsStream(FILE_URL);
             ResourceBundle resources = new PropertyResourceBundle(fis);
-            Enumeration<String> keys = resources.getKeys();
-            while (keys.hasMoreElements()) {
-                String key = keys.nextElement();
+            Enumeration<String> keysV = resources.getKeys();
+            while (keysV.hasMoreElements()) {
+                String key = keysV.nextElement();
                 mapTemp.put(key, resources.getString(key));
             }
 
-            exceptions = mapTemp.entrySet()
+            exceptionsValue = mapTemp.entrySet()
                     .stream()
                     .filter(p -> p.getKey().startsWith("exception.key"))
                     .collect(Collectors.toMap(
@@ -77,7 +77,7 @@ public class MergeConfig {
             LOGGER.error(e.getMessage(), e);
         }
 
-        return exceptions;
+        return exceptionsValue;
     }
     //CHECKSTYLE:ON
 

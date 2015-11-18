@@ -258,11 +258,11 @@ public class MergeUtil {
         }
     }
 
-    public String getKeysByValue(Map<String, Set<String>> map, String v) {
+    public String getKeysByValue(final Map<String, Set<String>> map, final String v) {
         String valueType = v.replaceAll("_Type", "");
-        for (String k : map.keySet()) {
-            if (map.get(k).contains(v) || map.get(k).contains(valueType)) {
-                return k;
+        for (Map.Entry<String, Set<String>> mapEntry : map.entrySet()) {
+            if (map.get(mapEntry.getKey()).contains(v) || map.get(mapEntry.getKey()).contains(valueType)) {
+                return mapEntry.getKey();
             }
         }
         return "";
