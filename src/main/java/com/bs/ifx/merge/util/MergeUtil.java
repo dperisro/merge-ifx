@@ -49,14 +49,11 @@ public class MergeUtil {
         parent.setXmlVersion(MergeConfig.VERSION);
         Element schema = parent.createElement("xsd:schema");
         schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
-        schema.setAttribute("xmlns", MergeConfig.BASE_NS + key);
+        schema.setAttribute("xmlns:" + getPrefixByKey(key), MergeConfig.BASE_NS + key);
 
         if (MergeConfig.NS && !key.equals(MergeConfig.DATATYPE_XSD)) {
             for (String nspace : ns) {
                 schema.setAttribute("xmlns:" + getPrefixByKey(nspace), MergeConfig.BASE_NS + nspace);
-            }
-            if (!key.equals(MergeConfig.COMMON_XSD)) {
-                schema.setAttribute("xmlns:com", MergeConfig.BASE_NS + MergeConfig.COMMON_XSD);
             }
         }
 
@@ -76,12 +73,6 @@ public class MergeUtil {
         return format;
     }
 
-    public void document2File(final Node doc, final File file) throws Exception {
-        XMLSerializer serializer = new XMLSerializer(new FileOutputStream(file), getPrettyPrintFormat());
-        loggerDocumentString(doc);
-        serializer.serialize(doc);
-    }
-
     public void loggerDocumentString(final Node doc) throws Exception {
         StringWriter stringOut = new StringWriter();
         XMLSerializer serial = new XMLSerializer(stringOut, getPrettyPrintFormat());
@@ -90,9 +81,16 @@ public class MergeUtil {
     }
 
     //TODO: Revisar Format & Ident
-    public void writeNode(final String parent, final String fileName, final Node node) throws Exception {
-        File outputFile = new File(parent, fileName);
-        document2File(node, outputFile);
+    public void writeNode(final String parent, final String fileName, final Node node, final boolean isTemp) throws Exception {
+
+        String finalName = fileName + MergeConfig.EXT_XSD;
+        if (isTemp) {
+            finalName = MergeConfig.PATH_NONS + File.separator + fileName + MergeConfig.EXT_XSD;
+        }
+        File outputFile = new File(parent, finalName);
+        XMLSerializer serializer = new XMLSerializer(new FileOutputStream(outputFile), getPrettyPrintFormat());
+        loggerDocumentString(node);
+        serializer.serialize(node);
 
         /*TransformerFactory t = TransformerFactory.newInstance();
         Transformer transformer = t.newTransformer();
@@ -127,8 +125,13 @@ public class MergeUtil {
         LOGGER.info("Wrote " + outputFile.getName());*/
     }
 
-    private String getPrefixByKey(final String key) {
-        return key.substring(0, 3).toLowerCase();
+    public String getPrefixByKey(final String key) {
+        String keyReplace = key.replaceAll("-", "");
+        if (keyReplace.length() >= 6) {
+            return keyReplace.substring(0, 6).toLowerCase();
+        } else {
+            return keyReplace.substring(0, 3).toLowerCase();
+        }
     }
 
     public void prepareOutput(final String outputPath) throws IOException {
@@ -139,6 +142,18 @@ public class MergeUtil {
         }
         if (!destination.mkdirs()) {
             throw new IOException("OutputPath is not create!!");
+        }
+        File destinationTmp = new File(outputPath + File.separator + MergeConfig.PATH_NONS);
+        if (!destinationTmp.mkdirs()) {
+            throw new IOException("OutputPath-Tmp is not create!!");
+        }
+    }
+
+    public void prepareOutputTmp(final String outputPath) throws IOException {
+        File destination = new File(outputPath, MergeConfig.PATH_NONS);
+        if (destination.exists()) {
+            LOGGER.info("Deleting Tmp....");
+            FileUtils.deleteDirectory(destination);
         }
     }
 
@@ -190,6 +205,10 @@ public class MergeUtil {
             }
         }
         return null;
+    }
+
+    public File prepareInputFileByKey(final String outputPath, final String keyWork) {
+        return new File(outputPath, MergeConfig.PATH_NONS + File.separator + keyWork + MergeConfig.EXT_XSD);
     }
 
     public Set<String> iterateElements(final NodeList list) {
@@ -245,7 +264,7 @@ public class MergeUtil {
         }
     }
 
-    public void createFile(final String currentKey, final MergeEntity entity, final String outPutPath)
+    public void createFile(final String currentKey, final MergeEntity entity, final String outPutPath, final boolean isTemp)
             throws Exception {
         if (!entity.hasEmptyNodes() || currentKey.equalsIgnoreCase(MergeConfig.DATATYPE_XSD)) {
             Document messageFile = createSkeletonFile(currentKey, entity.getKeysMatch());
@@ -254,7 +273,7 @@ public class MergeUtil {
                 Node imported2 = messageFile.importNode(imported, true);
                 messageFile.getDocumentElement().appendChild(imported2);
             }
-            writeNode(outPutPath, currentKey + MergeConfig.EXT_XSD, messageFile);
+            writeNode(outPutPath, currentKey, messageFile, isTemp);
         }
     }
 
@@ -266,6 +285,32 @@ public class MergeUtil {
             }
         }
         return "";
+    }
+
+    public void prepareNameSpacesByNode(final NodeList list, final Map<String, String> mapNodesKey) {
+        for (int i = 0; i < list.getLength(); i++) {
+            if (list.item(i) instanceof Element) {
+                Element first = (Element) list.item(i);
+                if (first.hasAttributes()) {
+                    prepareElementNameSpaces(first, "type", mapNodesKey);
+                    prepareElementNameSpaces(first, "ref", mapNodesKey);
+                    prepareElementNameSpaces(first, "base", mapNodesKey);
+                    prepareElementNameSpaces(first, "substitutionGroup", mapNodesKey);
+                }
+                if (first.hasChildNodes()) {
+                    NodeList list2 = first.getElementsByTagName("*");
+                    prepareNameSpacesByNode(list2, mapNodesKey);
+                }
+            }
+        }
+    }
+
+    public void prepareElementNameSpaces(final Element first, final String type, final Map<String, String> mapNodesKey) {
+        String valueSubstitutionGroup = first.getAttribute(type);
+        if (StringUtils.isNotBlank(valueSubstitutionGroup) && mapNodesKey.containsKey(valueSubstitutionGroup)) {
+            String value = mapNodesKey.get(valueSubstitutionGroup) + ":" + first.getAttributeNode(type).getNodeValue();
+            first.getAttributeNode(type).setValue(value);
+        }
     }
 
 }

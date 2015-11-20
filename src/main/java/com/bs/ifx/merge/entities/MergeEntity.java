@@ -21,7 +21,7 @@ public class MergeEntity {
         } else if (keyV.equalsIgnoreCase(MergeConfig.COMMON_XSD)) {
             this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD));
         } else {
-            this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD, MergeConfig.COMMON_XSD));
+            this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD, MergeConfig.COMMON_XSD, MergeConfig.HEADERS_XSD));
         }
     }
 

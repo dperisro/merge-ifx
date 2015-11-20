@@ -19,8 +19,9 @@ public class MergeConfig {
 
     public static final String VERSION = "1.0";
     public static final String ENCODING = "UTF-8";
-    public static final String DATATYPE_XSD = "1-data-types";
-    public static final String COMMON_XSD = "2-common-types";
+    public static final String DATATYPE_XSD = "data-types";
+    public static final String COMMON_XSD = "common-types";
+    public static final String HEADERS_XSD = "header-types";
     public static final String EXT_XSD = ".xsd";
 
     public static final String BASE_NS = "http://www.ifxforum.org/ifx/";
@@ -31,7 +32,8 @@ public class MergeConfig {
             "Long_Type", "Boolean_Type", "URL_Type", "HexBinary", "UUID_Type", "Identifier_Type", "Timestamp_Type",
             "PhoneNumber_Type", "IfxPath_Type", "BinData_Type"};
 
-    public static final boolean NS = false;
+    public static final boolean NS = true;
+    public static final String PATH_NONS = "no_ns";
 
     private final boolean downloadIFX;
     private final String inputPath;
