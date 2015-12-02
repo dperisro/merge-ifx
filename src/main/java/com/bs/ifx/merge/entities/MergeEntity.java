@@ -14,14 +14,20 @@ public class MergeEntity {
 
     public MergeEntity(final String keyV) {
         this.key = keyV;
-        this.nodeMatch = new LinkedHashMap<String, Node>();
+        this.nodeMatch = new LinkedHashMap<>();
         this.nodeMatchString = new LinkedHashSet<>();
         if (keyV.equalsIgnoreCase(MergeConfig.DATATYPE_XSD)) {
-            this.keysMatch = new HashSet<String>();
+            this.keysMatch = new HashSet<>();
         } else if (keyV.equalsIgnoreCase(MergeConfig.COMMON_XSD)) {
-            this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD));
+            this.keysMatch = new HashSet<>(Arrays.asList(MergeConfig.DATATYPE_XSD, MergeConfig.DATETIME_XSD, MergeConfig.ADDRTYPE_XSD, MergeConfig.CODETYPE_XSD));
+        } else if (keyV.equalsIgnoreCase(MergeConfig.DATETIME_XSD)) {
+            this.keysMatch = new HashSet<>(Arrays.asList(MergeConfig.DATATYPE_XSD));
+        } else if (keyV.equalsIgnoreCase(MergeConfig.ADDRTYPE_XSD)) {
+            this.keysMatch = new HashSet<>(Arrays.asList(MergeConfig.DATATYPE_XSD));
+        } else if (keyV.equalsIgnoreCase(MergeConfig.CODETYPE_XSD)) {
+            this.keysMatch = new HashSet<>(Arrays.asList(MergeConfig.DATATYPE_XSD));
         } else {
-            this.keysMatch = new HashSet<String>(Arrays.asList(MergeConfig.DATATYPE_XSD, MergeConfig.COMMON_XSD, MergeConfig.HEADERS_XSD));
+            this.keysMatch = new HashSet<>(Arrays.asList(MergeConfig.DATATYPE_XSD, MergeConfig.COMMON_XSD, MergeConfig.HEADERS_XSD, MergeConfig.DATETIME_XSD, MergeConfig.ADDRTYPE_XSD, MergeConfig.CODETYPE_XSD));
         }
     }
 

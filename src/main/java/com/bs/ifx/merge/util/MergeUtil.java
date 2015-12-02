@@ -51,7 +51,7 @@ public class MergeUtil {
         schema.setAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
         schema.setAttribute("xmlns:" + getPrefixByKey(key), MergeConfig.BASE_NS + key);
 
-        if (MergeConfig.NS && !key.equals(MergeConfig.DATATYPE_XSD)) {
+        if (MergeConfig.NS && (!key.equals(MergeConfig.DATATYPE_XSD) || !key.equals(MergeConfig.CODETYPE_XSD))) {
             for (String nspace : ns) {
                 schema.setAttribute("xmlns:" + getPrefixByKey(nspace), MergeConfig.BASE_NS + nspace);
             }
@@ -127,7 +127,9 @@ public class MergeUtil {
 
     public String getPrefixByKey(final String key) {
         String keyReplace = key.replaceAll("-", "");
-        if (keyReplace.length() >= 6) {
+        if (keyReplace.length() >= 8) {
+            return keyReplace.substring(0, 8).toLowerCase();
+        } else if (keyReplace.length() >= 6) {
             return keyReplace.substring(0, 6).toLowerCase();
         } else {
             return keyReplace.substring(0, 3).toLowerCase();
@@ -194,6 +196,30 @@ public class MergeUtil {
             if (node.getNodeValue().equalsIgnoreCase(keyWord)) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public boolean isMatchingDateTime(final Node node) {
+        if (node.getNodeValue().endsWith("Dt") || node.getNodeValue().endsWith("Time")) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isMatchingCode(final Node node) {
+        if (node.getNodeValue().endsWith("Code") || node.getNodeValue().endsWith("Code_type")
+                || node.getNodeValue().endsWith("CodeType") || node.getNodeValue().endsWith("Code_Type")
+                || node.getNodeValue().endsWith("CodeValue") || node.getNodeValue().endsWith("CodeValue_Type")
+                || node.getNodeValue().endsWith("CodeSource")) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isMatchingAdress(final Node node) {
+        if (node.getNodeValue().contains("Addr") && !node.getNodeValue().contains("PostAddr")) {
+            return true;
         }
         return false;
     }

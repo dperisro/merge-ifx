@@ -5,7 +5,6 @@ import com.bs.ifx.merge.entities.MergeEntity;
 import com.bs.ifx.merge.entities.MergeFileFilter;
 import com.bs.ifx.merge.entities.MergeRef;
 import com.bs.ifx.merge.util.MergeUtil;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +44,9 @@ public class MergeService extends MergeUtil {
             mapNodes.put(keyWord, new MergeEntity(keyWord));
         }
         mapNodes.put(MergeConfig.DATATYPE_XSD, new MergeEntity(MergeConfig.DATATYPE_XSD));
+        mapNodes.put(MergeConfig.DATETIME_XSD, new MergeEntity(MergeConfig.DATETIME_XSD));
+        mapNodes.put(MergeConfig.CODETYPE_XSD, new MergeEntity(MergeConfig.CODETYPE_XSD));
+        mapNodes.put(MergeConfig.ADDRTYPE_XSD, new MergeEntity(MergeConfig.ADDRTYPE_XSD));
         mapNodes.put(MergeConfig.COMMON_XSD, new MergeEntity(MergeConfig.COMMON_XSD));
         mapNodes.put(MergeConfig.HEADERS_XSD, new MergeEntity(MergeConfig.HEADERS_XSD));
     }
@@ -81,6 +83,12 @@ public class MergeService extends MergeUtil {
                         addKey = MergeConfig.DATATYPE_XSD;
                     } else if (StringUtils.isNotBlank(keyException)) {
                         addKey = keyException;
+                    } else if (isMatchingDateTime(node)) {
+                        addKey = MergeConfig.DATETIME_XSD;
+                    } else if (isMatchingCode(node)) {
+                        addKey = MergeConfig.CODETYPE_XSD;
+                    } else if (isMatchingAdress(node)) {
+                        addKey = MergeConfig.ADDRTYPE_XSD;
                     } else if (keyMatch != null) {
                         addKey = keyMatch;
                     }
