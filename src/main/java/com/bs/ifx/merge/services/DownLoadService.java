@@ -18,6 +18,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * .
+ * Download IFX Model with Selenium-Firefox
+ */
 @Component
 public class DownLoadService {
 
@@ -26,6 +30,10 @@ public class DownLoadService {
     @Autowired
     private MergeConfig config;
 
+    /**
+     * .
+     * Principal method
+     */
     public void doDownLoad() throws Exception {
         LOGGER.info("isDownloadIFX: " + config.isDownloadIFX());
         if (config.isDownloadIFX()) {
@@ -35,6 +43,10 @@ public class DownLoadService {
         }
     }
 
+    /**
+     * .
+     * Unzip IFX Model
+     */
     private void unzipDownloadFiles() throws Exception {
         String[] filesZip = new File(config.getInputPath()).list();
         for (String zip : filesZip) {
@@ -45,7 +57,11 @@ public class DownLoadService {
         }
     }
 
-    public void prepareInputDownload() throws Exception {
+    /**
+     * .
+     * Prepare directory to download
+     */
+    private void prepareInputDownload() throws Exception {
         File inputPathDown = new File(config.getInputPath());
         if (inputPathDown.exists()) {
             LOGGER.info("Deleting....");
@@ -56,6 +72,10 @@ public class DownLoadService {
         }
     }
 
+    /**
+     * .
+     * Download IFX Model
+     */
     private void donwLoadIFXObject() {
 
         String path = "C:\\development\\bs\\merge-ifx\\dist";

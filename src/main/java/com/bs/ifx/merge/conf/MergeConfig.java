@@ -11,6 +11,10 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * .
+ * Tool Configuration, Constants, Base Types and managment application.properties
+ */
 @Component
 public class MergeConfig {
 
@@ -36,7 +40,8 @@ public class MergeConfig {
             "OpenEnum_Type", "ClosedEnum_Type", "DayOfWeek", "DayOfMonth", "DayOfMonth_Type", "Month",
             "DayOfWeek_Type", "TimeOfDay", "TimeOfDay", "Time_Type", "DateTime_Type", "Date_Type", "Decimal_Type",
             "Long_Type", "Boolean_Type", "URL_Type", "HexBinary", "UUID_Type", "Identifier_Type", "Timestamp_Type",
-            "PhoneNumber_Type", "IfxPath_Type", "BinData_Type"};
+            "PhoneNumber_Type", "IfxPath_Type", "Binary", "BinData_Type", "Binary_Type", "ContentType", "BinLength",
+            "BinData"};
 
     public static final boolean NS = true;
     public static final String PATH_NONS = "no_ns";
@@ -62,6 +67,13 @@ public class MergeConfig {
     }
 
     //CHECKSTYLE:OFF
+
+    /**
+     * .
+     * Get exception from application.properties
+     *
+     * @return Map<String, Set<String>> --> Key + List of elements
+     */
     private Map<String, Set<String>> initExceptions() {
         final Map<String, String> mapTemp = new HashMap<String, String>();
         Map<String, Set<String>> exceptionsValue = new LinkedHashMap<String, Set<String>>();

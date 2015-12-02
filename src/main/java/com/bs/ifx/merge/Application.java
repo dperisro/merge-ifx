@@ -54,7 +54,7 @@ public class Application implements CommandLineRunner {
      */
     @Override
     public void run(final String... args) throws Exception {
-        //this.downLoadService.doDownLoad();
+        this.downLoadService.doDownLoad();
         this.mergeService.doMerge();
         this.reduceCommons.doAnalysis();
     }

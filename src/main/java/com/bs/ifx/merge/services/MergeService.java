@@ -81,14 +81,14 @@ public class MergeService extends MergeUtil {
                     String addKey = MergeConfig.COMMON_XSD;
                     if (isMatchingNodeBase(node, config.getBase())) {
                         addKey = MergeConfig.DATATYPE_XSD;
-                    } else if (StringUtils.isNotBlank(keyException)) {
-                        addKey = keyException;
                     } else if (isMatchingDateTime(node)) {
                         addKey = MergeConfig.DATETIME_XSD;
                     } else if (isMatchingCode(node)) {
                         addKey = MergeConfig.CODETYPE_XSD;
                     } else if (isMatchingAdress(node)) {
                         addKey = MergeConfig.ADDRTYPE_XSD;
+                    } else if (StringUtils.isNotBlank(keyException)) {
+                        addKey = keyException;
                     } else if (keyMatch != null) {
                         addKey = keyMatch;
                     }

@@ -5,10 +5,28 @@ import org.w3c.dom.Node;
 
 import java.util.*;
 
+/**
+ * .
+ * Entity to mapping Merge Tool
+ */
 public class MergeEntity {
 
+    /*
+     * .
+     * KeyWord
+     */
     private String key;
+
+    /*
+     * .
+     * Unique nodes
+     */
     private HashMap<String, Node> nodeMatch;
+
+    /*
+     * .
+     * Referenced keys
+     */
     private Set<String> keysMatch;
     private Set<String> nodeMatchString;
 

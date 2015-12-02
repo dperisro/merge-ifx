@@ -8,6 +8,10 @@ import org.xml.sax.SAXParseException;
 
 import java.io.PrintWriter;
 
+/**
+ * .
+ * ErrorHandler to generate DocumentBuiler (File to NodeList)
+ */
 public class MergeErrorHandler implements ErrorHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MergeErrorHandler.class);
