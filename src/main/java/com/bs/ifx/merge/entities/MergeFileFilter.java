@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 /**
- * Returns the files that satisfy the specified filter (XSD files)
+ * . Returns the files that satisfy the specified filter (XSD files)
  */
 public class MergeFileFilter implements FilenameFilter {
 

@@ -39,7 +39,7 @@ public class ReduceCommons extends MergeUtil {
         init();
     }
 
-    synchronized public int getIndex() {
+    public synchronized int getIndex() {
         return index++;
     }
 
@@ -89,7 +89,7 @@ public class ReduceCommons extends MergeUtil {
         }
     }
 
-    private void tunning(File file) throws Exception {
+    private void tunning(final File file) throws Exception {
         LOGGER.info(file.getName());
 
         mapIdentNode.put(file.getName(), index++);
