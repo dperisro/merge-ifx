@@ -24,7 +24,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.3.0.RELEASE'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.2.7.RELEASE'
     }
 }
 
@@ -37,48 +37,8 @@ tasks.withType(FindBugs) {
 
 applicationDistribution.from("src/main/resources/") { into "config" }
 
-task genJaxb {
-    ext.sourcesDir = "${buildDir}/generated-sources/jaxb"
-    ext.classesDir = "${buildDir}/classes/jaxb"
-    ext.schema = "dist/*.xsd"
-
-    outputs.dir classesDir
-
-    doLast() {
-        project.ant {
-            taskdef name: "xjc", classname: "com.sun.tools.xjc.XJCTask", classpath: configurations.jaxb.asPath
-            mkdir(dir: sourcesDir)
-            mkdir(dir: classesDir)
-
-            xjc(destdir: sourcesDir) {
-                schema(dir: 'dist', includes: '*.xsd')
-                //binding(dir: 'xjb', includes: '*.xjb')
-                produces(dir: sourcesDir, includes: "**/*.java")
-            }
-
-            javac(destdir: classesDir, source: 1.8, target: 1.8, debug: true,
-                    debugLevel: "lines,vars,source",
-                    classpath: configurations.jaxb.asPath) {
-                src(path: sourcesDir)
-                include(name: "**/*.java")
-                include(name: "*.java")
-            }
-
-            copy(todir: classesDir) {
-                fileset(dir: sourcesDir, erroronmissingdir: false) {
-                    exclude(name: "**/*.java")
-                }
-            }
-        }
-    }
-}
-
 checkstyle {
     toolVersion = "6.0"
-}
-
-configurations {
-    jaxb
 }
 
 dependencies {
@@ -96,10 +56,6 @@ dependencies {
     compile 'org.seleniumhq.selenium:selenium-server:2.48.2'
     compile 'net.lingala.zip4j:zip4j:1.2.3'
 
-    //JAXB
-    compile("wsdl4j:wsdl4j:1.6.1")
-    jaxb("com.sun.xml.bind:jaxb-xjc:2.2.4-1")
-    //compile(files(genJaxb.classesDir).builtBy(genJaxb))
 }
 
 task createPom << {
