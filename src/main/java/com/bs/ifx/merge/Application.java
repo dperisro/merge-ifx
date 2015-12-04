@@ -2,7 +2,6 @@ package com.bs.ifx.merge;
 
 import com.bs.ifx.merge.services.DownLoadService;
 import com.bs.ifx.merge.services.MergeService;
-import com.bs.ifx.merge.services.ReduceCommons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +32,6 @@ public class Application implements CommandLineRunner {
     @Autowired
     private MergeService mergeService;
 
-    @Autowired
-    private ReduceCommons reduceCommons;
-
     /**
      * .
      * SpringApplication run
@@ -56,7 +52,6 @@ public class Application implements CommandLineRunner {
     public void run(final String... args) throws Exception {
         this.downLoadService.doDownLoad();
         this.mergeService.doMerge();
-        this.reduceCommons.doAnalysis();
     }
 
 

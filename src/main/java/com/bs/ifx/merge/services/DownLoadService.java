@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.slf4j.Logger;
@@ -78,7 +79,6 @@ public class DownLoadService {
      */
     private void donwLoadIFXObject() {
 
-        String path = "C:\\development\\bs\\merge-ifx\\dist";
         FirefoxProfile profile = new FirefoxProfile();
         profile.setPreference("browser.download.folderList", 2);
         profile.setPreference("browser.download.dir", config.getInputPath());
@@ -96,7 +96,10 @@ public class DownLoadService {
         profile.setPreference("browser.download.manager.useWindow", false);
         profile.setPreference("services.sync.prefs.sync.browser.download.manager.showWhenStarting", false);
         profile.setPreference("pdfjs.disabled", true);
-        WebDriver driver = new FirefoxDriver(profile);
+
+        File pathBinary = new File(config.getPathFirefox());
+        FirefoxBinary binary = new FirefoxBinary(pathBinary);
+        WebDriver driver = new FirefoxDriver(binary, profile);
 
         //Login IFX
         driver.get(DownloadProperties.getUrlLogin());

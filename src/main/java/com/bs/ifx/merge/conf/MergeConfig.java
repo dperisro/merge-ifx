@@ -47,6 +47,7 @@ public class MergeConfig {
     public static final String PATH_NONS = "no_ns";
 
     private final boolean downloadIFX;
+    private final String pathFirefox;
     private final String inputPath;
     private final String outputPath;
     private final Set<String> keys;
@@ -55,10 +56,12 @@ public class MergeConfig {
 
     @Autowired
     public MergeConfig(@Value("${downloadIFX}") final boolean downloadIFXV,
+                       @Value("${pathFirefox}") final String pathFirefoxV,
                        @Value("${inputPath}") final String inputPathV,
                        @Value("${outputPath}") final String outputPathV,
                        @Value("${keys}") final String[] keysV) {
         this.downloadIFX = downloadIFXV;
+        this.pathFirefox = pathFirefoxV;
         this.inputPath = inputPathV;
         this.outputPath = outputPathV;
         this.keys = new LinkedHashSet<>(Arrays.asList(keysV));
@@ -116,6 +119,7 @@ public class MergeConfig {
         final String newLine = System.getProperty("line.separator");
         result.append(this.getClass().getName() + " {" + newLine);
         result.append(" downloadIFX: " + isDownloadIFX() + newLine);
+        result.append(" pathFirefox: " + getPathFirefox() + newLine);
         result.append(" pathOrigin: " + getInputPath() + newLine);
         result.append(" pathDestination: " + getOutputPath() + newLine);
         result.append(" keys: " + getKeys() + newLine);
@@ -143,6 +147,10 @@ public class MergeConfig {
 
     public boolean isDownloadIFX() {
         return downloadIFX;
+    }
+
+    public String getPathFirefox() {
+        return pathFirefox;
     }
 
     public Map<String, Set<String>> getExceptions() {
